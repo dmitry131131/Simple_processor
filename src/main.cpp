@@ -1,15 +1,16 @@
 #include <stdio.h>
 
 #include "Stack.h"
+#include "InputOutput.h"
+#include "Read.h"
+#include "Processing.h"
 
 int main()
 {
-    Stack stk = {};
+    textData* text = prepare("text.txt");
 
-    STACK_CTOR(&stk, 5);
+    
 
-    STACK_DUMP(&stk);
-
-    STACK_DTOR(&stk);
+    output_text(text);
     return 0;
 }

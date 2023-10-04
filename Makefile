@@ -15,12 +15,13 @@ TARGET = main
 SourcePrefix = src/
 BuildPrefix = build/
 BuildFolder = build
-Include = -Iinclude -IStack_task/include
+Include = -Iinclude -IStack_task/include -IOnegin_task/include
 
-Sources = 
+Sources = Processing.cpp Read.cpp MathUtils.cpp
 Main = main.cpp
 
-LibObjects = Stack_task/Color_console_output/build/Color_output.o Stack_task/build/Hash.o Stack_task/build/Output.o Stack_task/build/Stack.o
+LibObjects = Stack_task/Color_console_output/build/Color_output.o Stack_task/build/Hash.o Stack_task/build/Output.o\
+ Stack_task/build/Stack.o Onegin_task/build/InputOutput.o Onegin_task/build/Sorts.o Onegin_task/build/Error.o
 
 Source = $(addprefix $(SourcePrefix), $(Sources))
 MainObject = $(patsubst %.cpp, $(BuildPrefix)%.o, $(Main))
@@ -34,20 +35,22 @@ all : prepare folder $(TARGET)
 prepare: 
 	cd Stack_task && make
 	cd Stack_task/Color_console_output && make
+	cd Onegin_task && make lib
+	cd Onegin_task/Color_console_output && make
 
 $(BuildPrefix)%.o : $(SourcePrefix)%.cpp
 	@echo [CXX] -c $< -o $@
 	@$(CXX) $(CXXFLAGS) $(Include) -c $< -o $@
 
-#Useless compilation part for compilling in main
-$(TARGET) : $(objects) $(LibObjects) $(MainObject)
+$(TARGET) : $(LibObjects) $(objects) $(MainObject)
 	@echo [CC] $^ -o $@
 	@$(CXX) $(CXXFLAGS) $(Include) $^ -o $@
 
 clean :
 	rm $(BuildFolder)/*.o
 	rm $(TARGET)
-	cd Color_console_output && make clean
+	cd Stack_task && make clean
+	cd Onegin_task && make clean
 
 folder :
 	mkdir -p $(BuildFolder)
