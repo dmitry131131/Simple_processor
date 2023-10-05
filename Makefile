@@ -15,9 +15,9 @@ TARGET = main
 SourcePrefix = src/
 BuildPrefix = build/
 BuildFolder = build
-Include = -Iinclude -IStack_task/include -IOnegin_task/include
+Include = -Iinclude -IStack_task/include -IOnegin_task/include -IOnegin_task/Color_console_output/include/
 
-Sources = Processing.cpp Read.cpp MathUtils.cpp
+Sources = Processing.cpp Read.cpp MathUtils.cpp Error.cpp
 Main = main.cpp
 
 LibObjects = Stack_task/Color_console_output/build/Color_output.o Stack_task/build/Hash.o Stack_task/build/Output.o\

@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "Error.h"
+#include "OneginError.h"
 #include "InputOutput.h"
 #include "Read.h"
 

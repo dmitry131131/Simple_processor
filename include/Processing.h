@@ -2,6 +2,8 @@
  * @file
  * @brief Main functions or processor
 */
+#ifndef PROCESSING_H
+#define PROCESSING_H
 
 const int DOUBLE_COEF = 10000;
 
@@ -10,24 +12,26 @@ const int DOUBLE_COEF = 10000;
  * @param [in] text Pointer to programm text
  * @return Error code or NO_ERRORS if everything is ok
 */
-enum errorCode processing(textData* text);
+enum processorErrorCode processing(textData* text);
 
-enum errorCode processor_push(const char* line, Stack* stack);
+enum processorErrorCode processor_push(const char* line, Stack* stack);
 
-enum errorCode processor_out(Stack* stack, FILE* stream);
+enum processorErrorCode processor_out(Stack* stack, FILE* stream);
 
-enum errorCode processor_add(Stack* stack);
+enum processorErrorCode processor_add(Stack* stack);
 
-enum errorCode processor_sub(Stack* stack);
+enum processorErrorCode processor_sub(Stack* stack);
 
-enum errorCode processor_mue(Stack* stack);
+enum processorErrorCode processor_mue(Stack* stack);
 
-enum errorCode processor_div(Stack* stack);
+enum processorErrorCode processor_div(Stack* stack);
 
-enum errorCode processor_sqrt(Stack* stack);
+enum processorErrorCode processor_sqrt(Stack* stack);
 
-enum errorCode processor_trig(Stack* stack, int mode);
+enum processorErrorCode processor_trig(Stack* stack, int mode);
 
-enum errorCode processor_in(Stack* stack, FILE* inputStream);
+enum processorErrorCode processor_in(Stack* stack, FILE* inputStream);
 
-enum errorCode processor_hlt(Stack* stack);
+enum processorErrorCode processor_hlt(Stack* stack);
+
+#endif

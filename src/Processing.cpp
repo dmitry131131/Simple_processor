@@ -6,12 +6,13 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "Error.h"
 #include "Stack.h"
 #include "InputOutput.h"
 #include "Processing.h"
 #include "MathUtils.h"
 
-enum errorCode processing(textData* text)
+enum processorErrorCode processing(textData* text)
 {
     Stack stack = {};
     STACK_CTOR(&stack, 10);
@@ -19,7 +20,7 @@ enum errorCode processing(textData* text)
     if (stack.stackErrors)
     {
         abort();
-        return stack.stackErrors;
+        return CTOR_ERROR;
     }
 
     int comandCode = 0;
@@ -29,209 +30,218 @@ enum errorCode processing(textData* text)
         comandCode = 0;
         if (sscanf(text->linesPtr[i], "%d", &comandCode) != 1)
         {
-            printf("command error!\n");
-            // Wrong comand
+            print_processor_error(stderr, WRONG_COMMAND, i+1, text->linesPtr[i]);
+            STACK_DTOR(&stack);
+            return WRONG_COMMAND;
         }
+
+        processorErrorCode err = NO_PROCESSOR_ERRORS;
+
         switch (comandCode)
         {
         case 1:
-            processor_push(text->linesPtr[i], &stack);
+            err = processor_push(text->linesPtr[i], &stack);
             break;
 
         case 2:
-            processor_add(&stack);
+            err = processor_add(&stack);
             break;
 
         case 3:
-            processor_sub(&stack);
+            err = processor_sub(&stack);
             break;
 
         case 4:
-            processor_mue(&stack);
+            err = processor_mue(&stack);
             break;
 
         case 5:
-            processor_div(&stack);
+            err = processor_div(&stack);
             break;
 
         case 6:
-            processor_out(&stack, stdout);
+            err = processor_out(&stack, stdout);
             break;
 
         case 7:
-            processor_sqrt(&stack);
+            err = processor_sqrt(&stack);
             break;
 
         case 8:
-            processor_trig(&stack, 8);
+            err = processor_trig(&stack, 8);
             break;
 
         case 9:
-            processor_trig(&stack, 9);
+            err = processor_trig(&stack, 9);
             break;
 
         case 10:
-            processor_trig(&stack, 10);
+            err = processor_trig(&stack, 10);
             break;
 
         case 11:
-            processor_in(&stack, stdin);
+            err = processor_in(&stack, stdin);
             break;
 
         case 12:
-            processor_hlt(&stack);
-            return NO_ERRORS;
+            err = processor_hlt(&stack);
+            return NO_PROCESSOR_ERRORS;
             break;
         
         default:
-            // Wrong comand
+            print_processor_error(stderr, WRONG_COMMAND, i+1, text->linesPtr[i]);
+            STACK_DTOR(&stack);
+            return WRONG_COMMAND;
             break;
+        }
+
+        if (err)
+        {
+            print_processor_error(stderr, err, i+1, text->linesPtr[i]);
+            STACK_DTOR(&stack);
+            return err;
         }
     }
 
     STACK_DTOR(&stack);
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
 
-enum errorCode processor_push(const char* line, Stack* stack)
+enum processorErrorCode processor_push(const char* line, Stack* stack)
 {
     double num = NAN;
     int code = 0, intNum = 0;
-    if (sscanf(line, "%d %lf", &code, &num) != 1)
+    if (sscanf(line, "%d %lf", &code, &num) != 2)
     {
-        // Wrong comand
+        return WRONG_NUMBER;
     }
 
     intNum = (int) (num * DOUBLE_COEF);
 
     if (STACK_PUSH(stack, intNum))
     {
-        // push error
-        return stack->stackErrors;
+        return PUSH_ERROR;
     }
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
 
-enum errorCode processor_add(Stack* stack)
+enum processorErrorCode processor_add(Stack* stack)
 {
     int intNum2 = STACK_POP(stack);
     int intNum1 = STACK_POP(stack);
 
     if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
     {
-        // pop error
+        return POP_ERROR;
     }
 
     if (STACK_PUSH(stack, (intNum1 + intNum2)))
     {
-        // push error
-        return stack->stackErrors;
+        return PUSH_ERROR;
     }
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
 
-enum errorCode processor_sub(Stack* stack)
+enum processorErrorCode processor_sub(Stack* stack)
 {
     int intNum2 = STACK_POP(stack);
     int intNum1 = STACK_POP(stack);
 
     if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
     {
-        // pop error
+        return POP_ERROR;
     }
 
     if (STACK_PUSH(stack, intNum1 - intNum2))
     {
-        // push error
-        return stack->stackErrors;
+        return PUSH_ERROR;
     }
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
 
-enum errorCode processor_mue(Stack* stack)
+enum processorErrorCode processor_mue(Stack* stack)
 {
     int intNum2 = STACK_POP(stack);
     int intNum1 = STACK_POP(stack);
 
     if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
     {
-        // pop error
+        return POP_ERROR;
     }
 
     if (STACK_PUSH(stack, (intNum1 * intNum2 / DOUBLE_COEF)))
     {
-        // push error
-        return stack->stackErrors;
+        return PUSH_ERROR;
     }
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
 
-enum errorCode processor_div(Stack* stack)
+enum processorErrorCode processor_div(Stack* stack)
 {
     int intNum2 = STACK_POP(stack);
     int intNum1 = STACK_POP(stack);
 
     if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
     {
-        // pop error
+        return POP_ERROR;
+    }
+
+    if (intNum2 == 0)
+    {
+        return DIVIDION_BY_ZERO;
     }
 
     if (STACK_PUSH(stack, ((int) (((double) intNum1 / intNum2) * DOUBLE_COEF))))
     {
-        // push error
-        return stack->stackErrors;
+        return PUSH_ERROR;
     }
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
 
-enum errorCode processor_out(Stack* stack, FILE* stream)
+enum processorErrorCode processor_out(Stack* stack, FILE* stream)
 {
     int num = STACK_POP(stack);
 
     if (num == ELEM_T_POISON)
     {
-        // pop error
-        return stack->stackErrors;
+        return POP_ERROR;
     }
 
     fprintf(stream, "%.4lf\n", (double) num / DOUBLE_COEF);
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
 
-enum errorCode processor_sqrt(Stack* stack)
+enum processorErrorCode processor_sqrt(Stack* stack)
 {
     int num = STACK_POP(stack);
 
     if (num == ELEM_T_POISON)
     {
-        // pop error
-        return stack->stackErrors;
+        return POP_ERROR;
     }
 
     if (STACK_PUSH(stack, (int) (sqrt((float) (num / DOUBLE_COEF)) * DOUBLE_COEF)))
     {
-        // push error
-        return stack->stackErrors;
+        return PUSH_ERROR;
     }
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
 
-enum errorCode processor_trig(Stack* stack, int mode)
+enum processorErrorCode processor_trig(Stack* stack, int mode)
 {
     int num = STACK_POP(stack);
 
     if (num == ELEM_T_POISON)
     {
-        // pop error
-        return stack->stackErrors;
+        return POP_ERROR;
     }
 
     int root = 0;
@@ -255,36 +265,34 @@ enum errorCode processor_trig(Stack* stack, int mode)
 
     if (STACK_PUSH(stack, root))
     {
-        // push error
-        return stack->stackErrors;
+        return PUSH_ERROR;
     }
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
 
-enum errorCode processor_in(Stack* stack, FILE* inputStream)
+enum processorErrorCode processor_in(Stack* stack, FILE* inputStream)
 { 
     double num = NAN;
 
     if (fscanf(inputStream, "%lf", &num) != 1)
     {
-        // input error
+        return WRONG_NUMBER;
     }
 
     int intNum = (int) (num * DOUBLE_COEF);
 
     if (STACK_PUSH(stack, intNum))
     {
-        // push error
-        return stack->stackErrors;
+        return PUSH_ERROR;
     }
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
 
-enum errorCode processor_hlt(Stack* stack)
+enum processorErrorCode processor_hlt(Stack* stack)
 {
     STACK_DTOR(stack);
 
-    return NO_ERRORS;
+    return NO_PROCESSOR_ERRORS;
 }
