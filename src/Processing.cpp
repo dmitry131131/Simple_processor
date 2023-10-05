@@ -23,57 +23,39 @@ enum errorCode processing(textData* text)
     }
 
     int comandCode = 0;
-    double num = NAN;
-    double num1 = NAN, num2 = NAN;
 
     for (size_t i = 0; i < text->linesCount; i++)
     {
         comandCode = 0;
-
         if (sscanf(text->linesPtr[i], "%d", &comandCode) != 1)
         {
+            printf("command error!\n");
             // Wrong comand
         }
         switch (comandCode)
         {
         case 1:
-            num = NAN;
-            if (sscanf(text->linesPtr[i], "%lf", &num) != 1)
-            {
-                // Wrong comand
-            }
-            if (STACK_PUSH(&stack, num))
-            {
-                // push error
-                return stack.stackErrors;
-            }
-
+            processor_push(text->linesPtr[i], &stack);
             break;
 
         case 2:
-            num1 = NAN;
-            num2 = NAN;
-            num2 = STACK_POP(&stack);
-            num1 = STACK_POP(&stack);
+            processor_add(&stack);
+            break;
 
-            if (isnan(num1) || isnan(num2)) 
-            {
-                // invalid num
-                break;
-            }
+        case 3:
+            processor_sub(&stack);
+            break;
 
-            if (EqualityNumbers(num2, 0))
-            {
-                //devision by zero
-                break;
-            }
+        case 4:
+            processor_mue(&stack);
+            break;
 
-            if (STACK_PUSH(&stack, num1 / num2))
-            {
-                // push error
-                return stack.stackErrors;
-            }
+        case 5:
+            processor_div(&stack);
+            break;
 
+        case 6:
+            processor_out(&stack, stdout);
             break;
         
         default:
@@ -81,6 +63,119 @@ enum errorCode processing(textData* text)
             break;
         }
     }
+
+    STACK_DTOR(&stack);
+
+    return NO_ERRORS;
+}
+
+enum errorCode processor_push(const char* line, Stack* stack)
+{
+    double num = NAN;
+    int code = 0, intNum = 0;
+    if (sscanf(line, "%d %lf", &code, &num) != 1)
+    {
+        // Wrong comand
+    }
+
+    intNum = (int) (num * DOUBLE_COEF);
+
+    if (STACK_PUSH(stack, intNum))
+    {
+        // push error
+        return stack->stackErrors;
+    }
+
+    return NO_ERRORS;
+}
+
+enum errorCode processor_add(Stack* stack)
+{
+    int intNum2 = STACK_POP(stack);
+    int intNum1 = STACK_POP(stack);
+
+    if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
+    {
+        // pop error
+    }
+
+    if (STACK_PUSH(stack, (intNum1 + intNum2)))
+    {
+        // push error
+        return stack->stackErrors;
+    }
+
+    return NO_ERRORS;
+}
+
+enum errorCode processor_sub(Stack* stack)
+{
+    int intNum2 = STACK_POP(stack);
+    int intNum1 = STACK_POP(stack);
+
+    if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
+    {
+        // pop error
+    }
+
+    if (STACK_PUSH(stack, intNum1 - intNum2))
+    {
+        // push error
+        return stack->stackErrors;
+    }
+
+    return NO_ERRORS;
+}
+
+enum errorCode processor_mue(Stack* stack)
+{
+    int intNum2 = STACK_POP(stack);
+    int intNum1 = STACK_POP(stack);
+
+    if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
+    {
+        // pop error
+    }
+
+    if (STACK_PUSH(stack, (intNum1 * intNum2 / DOUBLE_COEF)))
+    {
+        // push error
+        return stack->stackErrors;
+    }
+
+    return NO_ERRORS;
+}
+
+enum errorCode processor_div(Stack* stack)
+{
+    int intNum2 = STACK_POP(stack);
+    int intNum1 = STACK_POP(stack);
+
+    if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
+    {
+        // pop error
+    }
+
+    if (STACK_PUSH(stack, ((int) (((double) intNum1 / intNum2) * DOUBLE_COEF))))
+    {
+        // push error
+        return stack->stackErrors;
+    }
+
+    return NO_ERRORS;
+}
+
+enum errorCode processor_out(Stack* stack, FILE* stream)
+{
+    int num = STACK_POP(stack);
+
+    if (num == ELEM_T_POISON)
+    {
+        // pop error
+        return stack->stackErrors;
+    }
+
+    fprintf(stream, "%.3lf\n", (double) num / DOUBLE_COEF);
 
     return NO_ERRORS;
 }

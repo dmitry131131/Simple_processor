@@ -9,8 +9,8 @@ int main()
 {
     textData* text = prepare("text.txt");
 
-    
+    processing(text);
 
-    output_text(text);
+    //output_text(text);
     return 0;
 }
