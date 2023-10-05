@@ -3,7 +3,7 @@
  * @brief Main functions or processor
 */
 
-const int DOUBLE_COEF = 1000;
+const int DOUBLE_COEF = 10000;
 
 /**
  * @brief Main processing function
@@ -23,3 +23,11 @@ enum errorCode processor_sub(Stack* stack);
 enum errorCode processor_mue(Stack* stack);
 
 enum errorCode processor_div(Stack* stack);
+
+enum errorCode processor_sqrt(Stack* stack);
+
+enum errorCode processor_trig(Stack* stack, int mode);
+
+enum errorCode processor_in(Stack* stack, FILE* inputStream);
+
+enum errorCode processor_hlt(Stack* stack);

@@ -57,6 +57,31 @@ enum errorCode processing(textData* text)
         case 6:
             processor_out(&stack, stdout);
             break;
+
+        case 7:
+            processor_sqrt(&stack);
+            break;
+
+        case 8:
+            processor_trig(&stack, 8);
+            break;
+
+        case 9:
+            processor_trig(&stack, 9);
+            break;
+
+        case 10:
+            processor_trig(&stack, 10);
+            break;
+
+        case 11:
+            processor_in(&stack, stdin);
+            break;
+
+        case 12:
+            processor_hlt(&stack);
+            return NO_ERRORS;
+            break;
         
         default:
             // Wrong comand
@@ -175,7 +200,91 @@ enum errorCode processor_out(Stack* stack, FILE* stream)
         return stack->stackErrors;
     }
 
-    fprintf(stream, "%.3lf\n", (double) num / DOUBLE_COEF);
+    fprintf(stream, "%.4lf\n", (double) num / DOUBLE_COEF);
+
+    return NO_ERRORS;
+}
+
+enum errorCode processor_sqrt(Stack* stack)
+{
+    int num = STACK_POP(stack);
+
+    if (num == ELEM_T_POISON)
+    {
+        // pop error
+        return stack->stackErrors;
+    }
+
+    if (STACK_PUSH(stack, (int) (sqrt((float) (num / DOUBLE_COEF)) * DOUBLE_COEF)))
+    {
+        // push error
+        return stack->stackErrors;
+    }
+
+    return NO_ERRORS;
+}
+
+enum errorCode processor_trig(Stack* stack, int mode)
+{
+    int num = STACK_POP(stack);
+
+    if (num == ELEM_T_POISON)
+    {
+        // pop error
+        return stack->stackErrors;
+    }
+
+    int root = 0;
+    switch (mode)
+    {
+    case 8:
+        root = (int) (sin(((double) num) / DOUBLE_COEF) * DOUBLE_COEF);
+        break;
+
+    case 9:
+        root = (int) (cos(((double) num) / DOUBLE_COEF) * DOUBLE_COEF);
+        break;
+    
+    case 10:
+        root = (int) (tan(((double) num) / DOUBLE_COEF) * DOUBLE_COEF);
+        break;
+    
+    default:
+        break;
+    }
+
+    if (STACK_PUSH(stack, root))
+    {
+        // push error
+        return stack->stackErrors;
+    }
+
+    return NO_ERRORS;
+}
+
+enum errorCode processor_in(Stack* stack, FILE* inputStream)
+{ 
+    double num = NAN;
+
+    if (fscanf(inputStream, "%lf", &num) != 1)
+    {
+        // input error
+    }
+
+    int intNum = (int) (num * DOUBLE_COEF);
+
+    if (STACK_PUSH(stack, intNum))
+    {
+        // push error
+        return stack->stackErrors;
+    }
+
+    return NO_ERRORS;
+}
+
+enum errorCode processor_hlt(Stack* stack)
+{
+    STACK_DTOR(stack);
 
     return NO_ERRORS;
 }
