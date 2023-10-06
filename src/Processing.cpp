@@ -10,7 +10,7 @@
 #include "Stack.h"
 #include "InputOutput.h"
 #include "Processing.h"
-#include "MathUtils.h"
+#include "ProcessorUtils.h"
 
 enum processorErrorCode processing(textData* text)
 {
@@ -68,15 +68,9 @@ enum processorErrorCode processing(textData* text)
             break;
 
         case 8:
-            err = processor_trig(&stack, 8);
-            break;
-
         case 9:
-            err = processor_trig(&stack, 9);
-            break;
-
         case 10:
-            err = processor_trig(&stack, 10);
+            err = processor_trig(&stack, comandCode);
             break;
 
         case 11:
@@ -87,7 +81,7 @@ enum processorErrorCode processing(textData* text)
             err = processor_hlt(&stack);
             return NO_PROCESSOR_ERRORS;
             break;
-        
+
         default:
             print_processor_error(stderr, WRONG_COMMAND, i+1, text->linesPtr[i]);
             STACK_DTOR(&stack);

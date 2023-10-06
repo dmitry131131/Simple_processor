@@ -4,7 +4,7 @@
 #include "InputOutput.h"
 #include "Read.h"
 
-textData* prepare(const char* filename)
+textData* prepare(const char* filename)//assert nullptr
 {
     static textData text = {};
     errorCode err = NO_ERRORS;
