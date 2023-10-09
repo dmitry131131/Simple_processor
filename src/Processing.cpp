@@ -16,13 +16,16 @@ enum processorErrorCode processing(softProcessorUnit* processor)
 {
     commandCodes command = NO_COMMAND;
     double commandArg = NAN;
+
+    registerNames reg = NO_REG;
     processorErrorCode err = NO_PROCESSOR_ERRORS;
     for (size_t commNum = 0; commNum < processor->commandCount; commNum++)
     {
+        processor_dump(processor);
         command = (commandCodes) *(processor->CS + processor->IP);
-        switch (command)
+        switch ((int) command)
         {
-        case PUSH:
+        case (PUSH | 1 << 4):
             processor->IP++;
             if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, 8))
             {
@@ -34,8 +37,29 @@ enum processorErrorCode processing(softProcessorUnit* processor)
             processor->IP += 8;
             break;
 
+        case (PUSH | 1 << 5):
+            processor->IP++;
+
+            reg = (registerNames) *(processor->CS + processor->IP);
+
+            err = processor_push_from_register(processor, reg);
+
+            processor->IP++;
+            break;
+
+        case (POP | 1 << 5):
+            processor->IP++;
+
+            reg = (registerNames) *(processor->CS + processor->IP);
+
+            err = processor_pop(processor, reg);
+
+            processor->IP++;
+
+            break;
+
         case IN:
-            
+            err = processor_in(&(processor->stack));
             processor->IP++;
             break;
         
@@ -98,6 +122,86 @@ enum processorErrorCode processing(softProcessorUnit* processor)
     return NO_PROCESSOR_ERRORS;
 }
 
+processorErrorCode processor_pop(softProcessorUnit* processor, registerNames reg)
+{
+    if (!processor)
+    {
+        return NULL_POINTER;
+    }
+
+    int data = STACK_POP(&(processor->stack));
+    
+    switch (reg)
+    {
+    case RAX:
+        processor->rax = data;
+        break;
+
+    case RBX:
+        processor->rbx = data;
+    break;
+
+    case RCX:
+        processor->rcx = data;
+    break;
+    
+    case RDX:
+        processor->rdx = data;
+    break;
+
+    case NO_REG:
+        return WRONG_COMMAND;
+        break;
+    default:
+        return WRONG_COMMAND;
+        break;
+    }
+
+    return NO_PROCESSOR_ERRORS;
+}
+
+processorErrorCode processor_push_from_register(softProcessorUnit* processor, registerNames reg)
+{
+    if (!processor)
+    {
+        return NULL_POINTER;
+    }
+
+    int data = 0;
+    switch (reg)
+    {
+    case RAX:
+        data = processor->rax;
+        break;
+
+    case RBX:
+        data = processor->rbx;
+    break;
+
+    case RCX:
+        data = processor->rcx;
+    break;
+    
+    case RDX:
+        data = processor->rdx;
+    break;
+
+    case NO_REG:
+        return WRONG_COMMAND;
+    break;
+    default:
+        return WRONG_COMMAND;
+        break;
+    }
+
+    if (STACK_PUSH(&(processor->stack), data))
+    {
+        return PUSH_ERROR;
+    }
+
+    return NO_PROCESSOR_ERRORS;
+}
+
 enum processorErrorCode processor_push(double num, Stack* stack)
 {
     if (!stack)
@@ -105,9 +209,7 @@ enum processorErrorCode processor_push(double num, Stack* stack)
         return NULL_POINTER;
     }
 
-    int code = 0, intNum = 0;
-
-    intNum = (int) (num * DOUBLE_COEF);
+    int intNum = (int) (num * DOUBLE_COEF);
 
     if (STACK_PUSH(stack, intNum))
     {
@@ -235,7 +337,7 @@ enum processorErrorCode processor_trig(Stack* stack, commandCodes mode)
     }
 
     int root = 0;
-    switch (mode)
+    switch ((int) mode)
     {
     case SIN:
         root = (int) (sin(((double) num) / DOUBLE_COEF) * DOUBLE_COEF);
@@ -261,11 +363,16 @@ enum processorErrorCode processor_trig(Stack* stack, commandCodes mode)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_in(Stack* stack, FILE* inputStream)
+enum processorErrorCode processor_in(Stack* stack)
 { 
+    if (!stack)
+    {
+        return NULL_POINTER;
+    }
+
     double num = NAN;
 
-    if (fscanf(inputStream, "%lf", &num) != 1)
+    if (scanf("%lf", &num) != 1)
     {
         return WRONG_NUMBER;
     }

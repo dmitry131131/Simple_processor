@@ -203,7 +203,7 @@ processorErrorCode dump_CS_info(const softProcessorUnit* processor, size_t buffe
         {
             colorCounter = 8;
         }
-        else if (processor->CS[i] == 33)
+        else if (processor->CS[i] == 33 || processor->CS[i] == 45)
         {
             colorCounter = 1;
         }
@@ -233,7 +233,8 @@ processorErrorCode count_len_of_buffer(const softProcessorUnit* processor, size_
             (*bufferLen) += 9;
         }
 
-        else if ((int) processor->CS[*bufferLen] == 33 || (int) processor->CS[*bufferLen] == 11)
+        else if ((int) processor->CS[*bufferLen] == 33 || (int) processor->CS[*bufferLen] == 11 
+              || (int) processor->CS[*bufferLen] == 45)
         {
             (*bufferLen) += 2;
         }

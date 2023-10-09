@@ -79,11 +79,11 @@ processorErrorCode read_bin_file(const char* filename, softProcessorUnit* proces
     char signature[10] = {};
     int version = 0;
 
-    if (err = read_char_from_file(file, signature))
+    if ((err = read_char_from_file(file, signature)))
     {
         RETURN(err);
     }
-    if (err = read_char_from_file(file, signature + 1))
+    if ((err = read_char_from_file(file, signature + 1)))
     {
         RETURN(err);
     }
@@ -93,7 +93,7 @@ processorErrorCode read_bin_file(const char* filename, softProcessorUnit* proces
         RETURN(BAD_SIGNATURE);
     }
 
-    if (err = read_int_from_file(file, &version))
+    if ((err = read_int_from_file(file, &version)))
     {
         RETURN(err);
     }
@@ -104,7 +104,7 @@ processorErrorCode read_bin_file(const char* filename, softProcessorUnit* proces
     }
 
     int count = 0;
-    if (err = read_int_from_file(file, &count))
+    if ((err = read_int_from_file(file, &count)))
     {
         RETURN(err);
     }
@@ -116,7 +116,7 @@ processorErrorCode read_bin_file(const char* filename, softProcessorUnit* proces
 
     processor->commandCount = (size_t) count;
 
-    if (err = read_programm_body(file, &(processor->CS), fileSize - FILE_HEADER_LEN))
+    if ((err = read_programm_body(file, &(processor->CS), fileSize - FILE_HEADER_LEN)))
     {
         RETURN(READ_PROGRAMM_BODY_ERROR);
     }

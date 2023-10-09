@@ -10,7 +10,7 @@ const int DOUBLE_COEF = 10000;
 /// @brief Enum with command codes
 enum commandCodes {
     NO_COMMAND  = 0,
-    PUSH        = 17,    
+    PUSH        = 1,    
     ADD         = 2,
     SUB         = 3,
     MUL         = 4,
@@ -21,7 +21,16 @@ enum commandCodes {
     COS         = 9,
     TAN         = 10,
     IN          = 11,
-    HLT         = 12
+    HLT         = 12,
+    POP         = 13
+};
+
+enum registerNames {
+    NO_REG  = 0,
+    RAX     = 1,
+    RBX     = 2,
+    RCX     = 3,
+    RDX     = 4
 };
 
 struct softProcessorUnit {
@@ -39,6 +48,10 @@ struct softProcessorUnit {
 */
 enum processorErrorCode processing(softProcessorUnit* processor);
 
+processorErrorCode processor_push_from_register(softProcessorUnit* processor, registerNames reg);
+
+processorErrorCode processor_pop(softProcessorUnit* processor, registerNames reg);
+
 enum processorErrorCode processor_push(double num, Stack* stack);
 
 enum processorErrorCode processor_out(Stack* stack, FILE* stream);
@@ -55,7 +68,7 @@ enum processorErrorCode processor_sqrt(Stack* stack);
 
 enum processorErrorCode processor_trig(Stack* stack, commandCodes mode);
 
-enum processorErrorCode processor_in(Stack* stack, FILE* inputStream);
+enum processorErrorCode processor_in(Stack* stack);
 
 enum processorErrorCode processor_hlt(Stack* stack);
 

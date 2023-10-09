@@ -16,8 +16,6 @@ int main()
         return 0;
     }
 
-    processor_dump(&processor);
-
     if (processing(&processor))
     {
         return 0;
