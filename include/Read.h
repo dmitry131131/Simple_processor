@@ -14,3 +14,5 @@ processorErrorCode read_bin_file(const char* filename, softProcessorUnit* proces
 processorErrorCode read_char_from_file(FILE* file, char* ch);
 
 processorErrorCode read_int_from_file(FILE* file, int* num);
+
+processorErrorCode filename_getter(int argc, char* argv[], char** filename);

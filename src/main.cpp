@@ -9,11 +9,18 @@
 
 int main(int argc, char* argv[])
 {   
-
     processorErrorCode error = NO_PROCESSOR_ERRORS;
     softProcessorUnit processor = {};
 
-    if ((error = prepare("outbin", &processor)))
+    char* filename = NULL;
+
+    if ((error = filename_getter(argc, argv, &filename)))
+    {
+        print_processor_error(stderr, error);
+        return 0;
+    }
+
+    if ((error = prepare(filename, &processor)))
     {
         print_processor_error(stderr, error);
         return 0;

@@ -43,6 +43,7 @@ void print_processor_error_message(FILE* stream, processorErrorCode error)
     CHECK_CODE(error, CALLOC_ERROR, "Calloc error, can't alloc memory!\n");
     CHECK_CODE(error, READ_PROGRAMM_BODY_ERROR, "Error in reading bytecode file body!\n");
     CHECK_CODE(error, FILE_OPEN_ERROR, "Can't open file!\n");
+    CHECK_CODE(error, BAD_FILENAME, "Bad bytecode file!\n");
 
     #undef CHECK_CODE
 }

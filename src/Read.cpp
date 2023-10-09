@@ -187,3 +187,19 @@ processorErrorCode read_int_from_file(FILE* file, int* num)
     }
     return NO_PROCESSOR_ERRORS;
 }
+
+processorErrorCode filename_getter(int argc, char* argv[], char** filename)
+{
+    if (!argv || !filename)
+    {
+        return NULL_POINTER;
+    }
+    if (argc < 2)
+    {
+        return BAD_FILENAME;
+    }
+
+    *filename = argv[1];
+
+    return NO_PROCESSOR_ERRORS;
+}
