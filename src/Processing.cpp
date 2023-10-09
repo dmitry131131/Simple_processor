@@ -21,7 +21,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
     processorErrorCode err = NO_PROCESSOR_ERRORS;
     for (size_t commNum = 0; commNum < processor->commandCount; commNum++)
     {
-        processor_dump(processor);
+        processor_dump(processor, WITHOUT_STACK);
         command = (commandCodes) *(processor->CS + processor->IP);
         switch ((int) command)
         {

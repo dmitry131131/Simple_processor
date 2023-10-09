@@ -5,7 +5,11 @@
 #ifndef MATH_UTILS_H
 #define MATH_UTILS_H
 
-const double MIN_DOUBLE_VALUE = 0.000001;
+enum dumpMode{
+    FULL,
+    STACK_ONLY,
+    WITHOUT_STACK
+};  
 
 processorErrorCode processor_ctor(softProcessorUnit* processor);
 
@@ -13,7 +17,7 @@ processorErrorCode processor_dtor(softProcessorUnit* processor);
 
 processorErrorCode processor_verify(softProcessorUnit* processor);
 
-processorErrorCode processor_dump(softProcessorUnit* processor);
+processorErrorCode processor_dump(softProcessorUnit* processor, dumpMode mode);
 
 processorErrorCode processor_CS_dump(softProcessorUnit* processor);
 

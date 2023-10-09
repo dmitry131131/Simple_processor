@@ -73,7 +73,7 @@ processorErrorCode processor_dtor(softProcessorUnit* processor)
     return NO_PROCESSOR_ERRORS;
 }
 
-processorErrorCode processor_dump(softProcessorUnit* processor)
+processorErrorCode processor_dump(softProcessorUnit* processor, dumpMode mode)
 {
     if (!processor)
     {
@@ -84,19 +84,16 @@ processorErrorCode processor_dump(softProcessorUnit* processor)
     {
         return NULL_POINTER;
     }
-    
-    if (write_register_values(processor))
+
+    if (mode != STACK_ONLY)
     {
-        return NULL_POINTER;
+        if (write_register_values(processor)) return NULL_POINTER;
+        if (processor_CS_dump(processor)) return NULL_POINTER;
     }
-
-    if (processor_CS_dump(processor))
+    if (mode != WITHOUT_STACK)
     {
-        return NULL_POINTER;
+        STACK_DUMP(&(processor->stack));
     }
-
-    STACK_DUMP(&(processor->stack));
-
     return NO_PROCESSOR_ERRORS;
 }
 
