@@ -11,6 +11,14 @@
 
 processorErrorCode prepare(const char* filename, softProcessorUnit* processor)
 {
+    #define RETURN(error) do{               \
+        if (processor_dtor(processor))      \
+        {                                   \
+            return DTOR_ERROR;              \
+        }                                   \
+        return error;                       \
+    }while(0)
+
     if (!filename)
     {
         return NULL_POINTER;
@@ -21,17 +29,21 @@ processorErrorCode prepare(const char* filename, softProcessorUnit* processor)
         return NULL_POINTER;
     }
 
-    if (processor_ctor(processor))
+    processorErrorCode error = NO_PROCESSOR_ERRORS;
+
+    if ((error = processor_ctor(processor)))
     {
-        return CTOR_ERROR;
+        RETURN(error);
     }
 
-    if (read_bin_file(filename, processor))
+    if ((error = read_bin_file(filename, processor)))
     {
-        return BIN_FILE_READ_ERROR;
+        RETURN(error);
     }
 
-    return NO_PROCESSOR_ERRORS;
+
+    #undef RETURN
+    return error;
 }
 
 processorErrorCode read_bin_file(const char* filename, softProcessorUnit* processor)

@@ -14,6 +14,15 @@
 
 enum processorErrorCode processing(softProcessorUnit* processor)
 {
+
+    #define RETURN(error) do{               \
+        if (processor_dtor(processor))      \
+        {                                   \
+            return DTOR_ERROR;              \
+        }                                   \
+        return error;                       \
+    }while(0)
+
     commandCodes command = NO_COMMAND;
     double commandArg = NAN;
 
@@ -29,7 +38,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
             processor->IP++;
             if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, 8))
             {
-                return COPU_ARG_ERROR;
+                RETURN(COPU_ARG_ERROR);
             }
 
             err = processor_push(commandArg, &(processor->stack));
@@ -108,16 +117,22 @@ enum processorErrorCode processing(softProcessorUnit* processor)
             break;
         
         default:
+            err = WRONG_COMMAND;
             break;
         }
     }
 
     if (processor_dtor(processor))
     {
-        return DTOR_ERROR;
+        RETURN(DTOR_ERROR);
     }
 
-    if (err) return err;
+    if (err)
+    {
+        RETURN(err);
+    }
+
+    #undef RETURN
 
     return NO_PROCESSOR_ERRORS;
 }

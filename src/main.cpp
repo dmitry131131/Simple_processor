@@ -7,17 +7,21 @@
 #include "Read.h"
 #include "ProcessorUtils.h"
 
-int main()
-{
+int main(int argc, char* argv[])
+{   
+
+    processorErrorCode error = NO_PROCESSOR_ERRORS;
     softProcessorUnit processor = {};
 
-    if (prepare("outbin", &processor))
+    if ((error = prepare("outbin", &processor)))
     {
+        print_processor_error(stderr, error);
         return 0;
     }
 
-    if (processing(&processor))
+    if ((error = processing(&processor)))
     {
+        print_processor_error(stderr, error);
         return 0;
     }
 
