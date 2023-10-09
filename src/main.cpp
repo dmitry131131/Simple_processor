@@ -16,7 +16,7 @@ int main()
         return 0;
     }
 
-    processor_CS_dump(&processor);
+    processor_dump(&processor);
 
     if (processing(&processor))
     {

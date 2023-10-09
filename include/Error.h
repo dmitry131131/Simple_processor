@@ -27,7 +27,8 @@ enum processorErrorCode {
     COPU_ARG_ERROR,
     VERIFY_ERROR,
     STACK_CTOR_ERROR,
-    CALLOC_ERROR
+    CALLOC_ERROR,
+    READ_PROGRAMM_BODY_ERROR
 };
 
 void print_processor_error_message(FILE* stream, processorErrorCode error);

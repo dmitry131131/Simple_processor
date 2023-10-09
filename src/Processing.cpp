@@ -35,7 +35,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
             break;
 
         case IN:
-        
+            
             processor->IP++;
             break;
         

@@ -48,6 +48,11 @@ processorErrorCode read_bin_file(const char* filename, softProcessorUnit* proces
 
     FILE* file = fopen(filename, "rb");
 
+    #define RETURN(err) do{     \
+        fclose(file);           \
+        return err;             \
+    }while(0);
+
     if (!file)
     {
         return FILE_OPEN_ERROR;
@@ -66,7 +71,7 @@ processorErrorCode read_bin_file(const char* filename, softProcessorUnit* proces
 
     if (!(processor->CS))
     {
-        return CALLOC_ERROR;
+        RETURN(CALLOC_ERROR);
     }
 
     processorErrorCode err = NO_PROCESSOR_ERRORS;
@@ -74,46 +79,51 @@ processorErrorCode read_bin_file(const char* filename, softProcessorUnit* proces
     char signature[10] = {};
     int version = 0;
 
-    if ((err = read_char_from_file(file, signature)))
+    if (err = read_char_from_file(file, signature))
     {
-        return err;
+        RETURN(err);
     }
     if (err = read_char_from_file(file, signature + 1))
     {
-        return err;
+        RETURN(err);
     }
 
     if (signature[0] != 'A' || signature[1] != 'D')
     {
-        return BAD_SIGNATURE;
+        RETURN(BAD_SIGNATURE);
     }
 
     if (err = read_int_from_file(file, &version))
     {
-        return err;
+        RETURN(err);
     }
 
     if (version != VERSION)
     {
-        return VERSION_ERROR;
+        RETURN(VERSION_ERROR);
     }
 
     int count = 0;
     if (err = read_int_from_file(file, &count))
     {
-        return err;
+        RETURN(err);
     }
 
     if (count <= 0)
     {
-        return COMMAND_COUNT_ERROR;
+        RETURN(COMMAND_COUNT_ERROR);
     }
 
     processor->commandCount = (size_t) count;
 
-    if (err = read_programm_body(file, &(processor->CS), fileSize))
+    if (err = read_programm_body(file, &(processor->CS), fileSize - FILE_HEADER_LEN))
+    {
+        RETURN(READ_PROGRAMM_BODY_ERROR);
+    }
 
     fclose(file);
+
+    #undef RETURN
     return NO_PROCESSOR_ERRORS;
 }
 
@@ -129,7 +139,8 @@ processorErrorCode read_programm_body(FILE* file, char** buff, size_t len)
         return NULL_POINTER;
     }
 
-    if (fread(*buff, sizeof(char), len, file))
+    size_t realLen = fread(*buff, sizeof(char), len, file);
+    if (realLen != len)
     {
         return FREAD_ERROR;
     }

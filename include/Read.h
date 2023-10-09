@@ -3,6 +3,8 @@
  * @brief Functions for reading programm from text
 */
 
+const size_t FILE_HEADER_LEN = 10;
+
 processorErrorCode prepare(const char* filename, softProcessorUnit* processor);
 
 processorErrorCode read_programm_body(FILE* file, char** buff, size_t len);
