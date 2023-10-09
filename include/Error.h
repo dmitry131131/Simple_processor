@@ -5,6 +5,8 @@
 #ifndef ERROR_H
 #define ERROR_H
 
+const int VERSION = 1;
+
 enum processorErrorCode {
     NO_PROCESSOR_ERRORS,
     WRONG_COMMAND,
@@ -12,7 +14,20 @@ enum processorErrorCode {
     CTOR_ERROR,
     PUSH_ERROR,
     POP_ERROR,
-    DIVIDION_BY_ZERO
+    DIVIDION_BY_ZERO,
+    FILE_OPEN_ERROR,
+    FREAD_ERROR,
+    BAD_SIGNATURE,
+    BAD_FILE_DESCRIPTOR,
+    NULL_POINTER,
+    VERSION_ERROR,
+    COMMAND_COUNT_ERROR,
+    BIN_FILE_READ_ERROR,
+    DTOR_ERROR,
+    COPU_ARG_ERROR,
+    VERIFY_ERROR,
+    STACK_CTOR_ERROR,
+    CALLOC_ERROR
 };
 
 void print_processor_error_message(FILE* stream, processorErrorCode error);

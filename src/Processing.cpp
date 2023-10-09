@@ -12,104 +12,100 @@
 #include "Processing.h"
 #include "ProcessorUtils.h"
 
-enum processorErrorCode processing(textData* text)
+enum processorErrorCode processing(softProcessorUnit* processor)
 {
-    Stack stack = {};
-    STACK_CTOR(&stack, 10);
-
-    if (stack.stackErrors)
+    commandCodes command = NO_COMMAND;
+    double commandArg = NAN;
+    processorErrorCode err = NO_PROCESSOR_ERRORS;
+    for (size_t commNum = 0; commNum < processor->commandCount; commNum++)
     {
-        abort();
-        return CTOR_ERROR;
-    }
-
-    int comandCode = 0;
-
-    for (size_t i = 0; i < text->linesCount; i++)
-    {
-        comandCode = 0;
-        if (sscanf(text->linesPtr[i], "%d", &comandCode) != 1)
+        command = (commandCodes) *(processor->CS + processor->IP);
+        switch (command)
         {
-            print_processor_error(stderr, WRONG_COMMAND, i+1, text->linesPtr[i]);
-            STACK_DTOR(&stack);
-            return WRONG_COMMAND;
-        }
+        case PUSH:
+            processor->IP++;
+            if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, 8))
+            {
+                return COPU_ARG_ERROR;
+            }
 
-        processorErrorCode err = NO_PROCESSOR_ERRORS;
+            err = processor_push(commandArg, &(processor->stack));
 
-        switch (comandCode)
-        {
-        case 1:
-            err = processor_push(text->linesPtr[i], &stack);
+            processor->IP += 8;
             break;
 
-        case 2:
-            err = processor_add(&stack);
+        case IN:
+        
+            processor->IP++;
+            break;
+        
+        case ADD:
+            err = processor_add(&(processor->stack));
+            processor->IP++;
             break;
 
-        case 3:
-            err = processor_sub(&stack);
+        case SUB:
+            err = processor_sub(&(processor->stack));
+            processor->IP++;
             break;
 
-        case 4:
-            err = processor_mue(&stack);
+        case MUL:
+            err = processor_mul(&(processor->stack));
+            processor->IP++;
             break;
 
-        case 5:
-            err = processor_div(&stack);
+        case DIV:
+            err = processor_div(&(processor->stack));
+            processor->IP++;
             break;
 
-        case 6:
-            err = processor_out(&stack, stdout);
+        case OUT:
+            err = processor_out(&(processor->stack), stdout);
+            processor->IP++;
             break;
 
-        case 7:
-            err = processor_sqrt(&stack);
+        case SQRT:
+            err = processor_sqrt(&(processor->stack));
+            processor->IP++;
             break;
 
-        case 8:
-        case 9:
-        case 10:
-            err = processor_trig(&stack, comandCode);
+        case SIN:
+
+        case COS:
+
+        case TAN:
+            err = processor_trig(&(processor->stack), command);
+            processor->IP++;
             break;
 
-        case 11:
-            err = processor_in(&stack, stdin);
+        case HLT:
+            err = processor_hlt(&(processor->stack));
+            processor->IP++;
             break;
-
-        case 12:
-            err = processor_hlt(&stack);
-            return NO_PROCESSOR_ERRORS;
-            break;
-
+        
         default:
-            print_processor_error(stderr, WRONG_COMMAND, i+1, text->linesPtr[i]);
-            STACK_DTOR(&stack);
-            return WRONG_COMMAND;
             break;
-        }
-
-        if (err)
-        {
-            print_processor_error(stderr, err, i+1, text->linesPtr[i]);
-            STACK_DTOR(&stack);
-            return err;
         }
     }
 
-    STACK_DTOR(&stack);
+    if (processor_dtor(processor))
+    {
+        return DTOR_ERROR;
+    }
+
+    if (err) return err;
 
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_push(const char* line, Stack* stack)
+enum processorErrorCode processor_push(double num, Stack* stack)
 {
-    double num = NAN;
-    int code = 0, intNum = 0;
-    if (sscanf(line, "%d %lf", &code, &num) != 2)
+    if (!stack)
     {
-        return WRONG_NUMBER;
+        return NULL_POINTER;
     }
+
+    int code = 0, intNum = 0;
 
     intNum = (int) (num * DOUBLE_COEF);
 
@@ -157,7 +153,7 @@ enum processorErrorCode processor_sub(Stack* stack)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_mue(Stack* stack)
+enum processorErrorCode processor_mul(Stack* stack)
 {
     int intNum2 = STACK_POP(stack);
     int intNum1 = STACK_POP(stack);
@@ -229,7 +225,7 @@ enum processorErrorCode processor_sqrt(Stack* stack)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_trig(Stack* stack, int mode)
+enum processorErrorCode processor_trig(Stack* stack, commandCodes mode)
 {
     int num = STACK_POP(stack);
 
@@ -241,15 +237,15 @@ enum processorErrorCode processor_trig(Stack* stack, int mode)
     int root = 0;
     switch (mode)
     {
-    case 8:
+    case SIN:
         root = (int) (sin(((double) num) / DOUBLE_COEF) * DOUBLE_COEF);
         break;
 
-    case 9:
+    case COS:
         root = (int) (cos(((double) num) / DOUBLE_COEF) * DOUBLE_COEF);
         break;
     
-    case 10:
+    case TAN:
         root = (int) (tan(((double) num) / DOUBLE_COEF) * DOUBLE_COEF);
         break;
     
@@ -286,7 +282,6 @@ enum processorErrorCode processor_in(Stack* stack, FILE* inputStream)
 
 enum processorErrorCode processor_hlt(Stack* stack)
 {
-    STACK_DTOR(stack);
 
     return NO_PROCESSOR_ERRORS;
 }
