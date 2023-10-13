@@ -30,7 +30,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
     processorErrorCode err = NO_PROCESSOR_ERRORS;
     for (size_t commNum = 0; commNum < processor->commandCount; commNum++)
     {
-        processor_dump(processor, WITHOUT_STACK);
+        processor_dump(processor, FULL);
         command = (commandCodes) *(processor->CS + processor->IP);
         switch ((int) command)
         {
@@ -334,7 +334,7 @@ enum processorErrorCode processor_sqrt(Stack* stack)
         return POP_ERROR;
     }
 
-    if (STACK_PUSH(stack, (int) (sqrt((float) (num / DOUBLE_COEF)) * DOUBLE_COEF)))
+    if (STACK_PUSH(stack, (int) (sqrt((double) (num / DOUBLE_COEF)) * DOUBLE_COEF)))
     {
         return PUSH_ERROR;
     }

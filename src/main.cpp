@@ -14,6 +14,7 @@ int main(int argc, char* argv[])
 
     char* filename = NULL;
 
+
     if ((error = filename_getter(argc, argv, &filename)))
     {
         print_processor_error(stderr, error);

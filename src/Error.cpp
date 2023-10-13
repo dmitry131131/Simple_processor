@@ -16,34 +16,42 @@ void print_processor_error_message(FILE* stream, processorErrorCode error)
 {
     color_fprintf(stream, COLOR_RED, STYLE_BOLD, "Processor error: ");
 
-    #define CHECK_CODE(error, code, message) do{    \
-        if ((error) == (code))                      \
-        {                                           \
+    #define CHECK_CODE(code, message)               \
+        case code:                                  \
             fprintf(stream, message);               \
-        }                                           \
-    }while(0)
+            break;                                  \
 
-    CHECK_CODE(error, WRONG_COMMAND, "Unknown command entered!\n");
-    CHECK_CODE(error, WRONG_NUMBER, "Wrong number entered!\n");
-    CHECK_CODE(error, CTOR_ERROR, "Stack constructor error!\n");
-    CHECK_CODE(error, PUSH_ERROR, "Push in stack error!\n");
-    CHECK_CODE(error, POP_ERROR, "Pop from stack error!\n");
-    CHECK_CODE(error, DIVIDION_BY_ZERO, "Dividion by zero!\n");
-    CHECK_CODE(error, FREAD_ERROR, "File read error, can't read information from file!\n");
-    CHECK_CODE(error, BAD_SIGNATURE, "Bad file signature!\n");
-    CHECK_CODE(error, BAD_FILE_DESCRIPTOR, "Bad file descriptor!\n");
-    CHECK_CODE(error, NULL_POINTER, "NULL pointer given!\n");
-    CHECK_CODE(error, VERSION_ERROR, "Processor version and assembler version don't match!\n");
-    CHECK_CODE(error, COMMAND_COUNT_ERROR, "Command count in file header and real command count don't match!\n");
-    CHECK_CODE(error, BIN_FILE_READ_ERROR, "Fread error with BIN file!\n");
-    CHECK_CODE(error, DTOR_ERROR, "Destructor error!\n");
-    CHECK_CODE(error, COPU_ARG_ERROR, "Copy argument from buffer to variable error!\n");
-    CHECK_CODE(error, VERIFY_ERROR, "Processor verification error!\n");
-    CHECK_CODE(error, STACK_CTOR_ERROR, "Stack constructor error!\n");
-    CHECK_CODE(error, CALLOC_ERROR, "Calloc error, can't alloc memory!\n");
-    CHECK_CODE(error, READ_PROGRAMM_BODY_ERROR, "Error in reading bytecode file body!\n");
-    CHECK_CODE(error, FILE_OPEN_ERROR, "Can't open file!\n");
-    CHECK_CODE(error, BAD_FILENAME, "Bad bytecode file!\n");
+    switch (error)
+    {
+    case NO_PROCESSOR_ERRORS:
+        break;
+    
+    CHECK_CODE(WRONG_COMMAND, "Unknown command entered!\n");
+    CHECK_CODE(WRONG_NUMBER, "Wrong number entered!\n");
+    CHECK_CODE(CTOR_ERROR, "Stack constructor error!\n");
+    CHECK_CODE(PUSH_ERROR, "Push in stack error!\n");
+    CHECK_CODE(POP_ERROR, "Pop from stack error!\n");
+    CHECK_CODE(DIVIDION_BY_ZERO, "Dividion by zero!\n");
+    CHECK_CODE(FREAD_ERROR, "File read error, can't read information from file!\n");
+    CHECK_CODE(BAD_SIGNATURE, "Bad file signature!\n");
+    CHECK_CODE(BAD_FILE_DESCRIPTOR, "Bad file descriptor!\n");
+    CHECK_CODE(NULL_POINTER, "NULL pointer given!\n");
+    CHECK_CODE(VERSION_ERROR, "Processor version and assembler version don't match!\n");
+    CHECK_CODE(COMMAND_COUNT_ERROR, "Command count in file header and real command count don't match!\n");
+    CHECK_CODE(BIN_FILE_READ_ERROR, "Fread error with BIN file!\n");
+    CHECK_CODE(DTOR_ERROR, "Destructor error!\n");
+    CHECK_CODE(COPU_ARG_ERROR, "Copy argument from buffer to variable error!\n");
+    CHECK_CODE(VERIFY_ERROR, "Processor verification error!\n");
+    CHECK_CODE(STACK_CTOR_ERROR, "Stack constructor error!\n");
+    CHECK_CODE(CALLOC_ERROR, "Calloc error, can't alloc memory!\n");
+    CHECK_CODE(READ_PROGRAMM_BODY_ERROR, "Error in reading bytecode file body!\n");
+    CHECK_CODE(FILE_OPEN_ERROR, "Can't open file!\n");
+    CHECK_CODE(BAD_FILENAME, "Bad bytecode file!\n");
+        
+    default:
+        fprintf(stream, "Unknown error!\n");
+        break;
+    }
 
     #undef CHECK_CODE
 }
