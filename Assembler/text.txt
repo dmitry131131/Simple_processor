@@ -1,0 +1,11 @@
+push 3
+in
+pop rax
+push rax
+add
+:bb
+Out
+:sss
+jmp bb
+jmp sss
+hlt

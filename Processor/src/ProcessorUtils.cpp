@@ -242,7 +242,6 @@ processorErrorCode count_len_of_buffer(const softProcessorUnit* processor, size_
         }
     }
 
-
     return NO_PROCESSOR_ERRORS;
 }
 

@@ -22,7 +22,8 @@ enum commandCodes {
     TAN         = 10,
     IN          = 11,
     HLT         = 12,
-    POP         = 13
+    POP         = 13,
+    JMP         = 14
 };
 
 enum registerNames {

@@ -67,6 +67,10 @@ enum processorErrorCode processing(softProcessorUnit* processor)
 
             break;
 
+        case JMP:
+
+            break;
+
         case IN:
             err = processor_in(&(processor->stack));
             processor->IP++;
@@ -134,6 +138,12 @@ enum processorErrorCode processing(softProcessorUnit* processor)
 
     #undef RETURN
 
+    return NO_PROCESSOR_ERRORS;
+}
+
+processorErrorCode processor_jmp()
+{
+    
     return NO_PROCESSOR_ERRORS;
 }
 
