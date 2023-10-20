@@ -6,6 +6,6 @@ all:
 	cd Disassembler && make
 
 clean:
+	cd Disassembler && make clean
 	cd Assembler && make clean
 	cd Processor && make clean
-	cd Disassembler && make clean

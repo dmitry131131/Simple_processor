@@ -15,7 +15,7 @@ TARGET = main
 SourcePrefix = src/
 BuildPrefix = build/
 BuildFolder = build
-Include = -Iinclude -IStack_task/include -IOnegin_task/include -IOnegin_task/Color_console_output/include/
+Include = -Iinclude -IStack_task/include -IOnegin_task/include -IOnegin_task/Color_console_output/include/ -I../include
 
 Sources = Processing.cpp Read.cpp ProcessorUtils.cpp Error.cpp
 Main = main.cpp
