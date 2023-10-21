@@ -196,11 +196,11 @@ processorErrorCode dump_CS_info(const softProcessorUnit* processor, size_t buffe
             colorCounter--;
             continue;
         } 
-        else if (processor->CS[i] == 17)
+        else if (processor->CS[i] == (PUSH | IMM))
         {
             colorCounter = 8;
         }
-        else if (processor->CS[i] == 33 || processor->CS[i] == 45)
+        else if (processor->CS[i] == (PUSH | REG) || processor->CS[i] == (POP | REG))
         {
             colorCounter = 1;
         }
@@ -225,13 +225,13 @@ processorErrorCode count_len_of_buffer(const softProcessorUnit* processor, size_
 
     for (size_t i = 0; i < processor->commandCount; i++)
     {
-        if ((int) processor->CS[*bufferLen] == 17)
+        if ((int) processor->CS[*bufferLen] == (PUSH | IMM))
         {
             (*bufferLen) += 9;
         }
 
-        else if ((int) processor->CS[*bufferLen] == 33 || (int) processor->CS[*bufferLen] == 11 
-              || (int) processor->CS[*bufferLen] == 45)
+        else if ((int) processor->CS[*bufferLen] == (PUSH | REG) || (int) processor->CS[*bufferLen] == 11 
+              || (int) processor->CS[*bufferLen] == (POP | REG))
         {
             (*bufferLen) += 2;
         }
