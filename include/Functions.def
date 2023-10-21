@@ -5,7 +5,7 @@ write_char_to_buffer(&binBuffer, num);                  \
                                                         \
 }while(0)
 
-DEF_CMD("jmp", 1, 1, 
+DEF_CMD("jmp", 14, 1, 
     {
         fprintf(outputTextFile, "99 ");
 
@@ -133,7 +133,7 @@ DEF_CMD("push", 1, 1,
         }
     })
 
-DEF_CMD("pop", 1, 1, 
+DEF_CMD("pop", 13, 1, 
     {
         if (sscanf(text->linesPtr[i], "%s %s", command, registerName) != 2)
         {
@@ -197,57 +197,57 @@ DEF_CMD("pop", 1, 1,
         }
     })
 
-DEF_CMD("add", 1, 1, 
+DEF_CMD("add", 2, 0, 
     {
         WRITE_SINGLE_COMMAND(2);
     })
 
-DEF_CMD("sub", 1, 1, 
+DEF_CMD("sub", 3, 0, 
     {
         WRITE_SINGLE_COMMAND(3);
     })
 
-DEF_CMD("mul", 1, 1, 
+DEF_CMD("mul", 4, 0, 
     {
         WRITE_SINGLE_COMMAND(4);
     })
 
-DEF_CMD("div", 1, 1, 
+DEF_CMD("div", 5, 0, 
     {
         WRITE_SINGLE_COMMAND(5);
     })
 
-DEF_CMD("out", 1, 1, 
+DEF_CMD("out", 6, 0, 
     {
         WRITE_SINGLE_COMMAND(6);
     })
 
-DEF_CMD("sqrt", 1, 1, 
+DEF_CMD("sqrt", 7, 0, 
     {
         WRITE_SINGLE_COMMAND(7);
     })
 
-DEF_CMD("sin", 1, 1, 
+DEF_CMD("sin", 8, 0, 
     {
         WRITE_SINGLE_COMMAND(8);
     })
 
-DEF_CMD("cos", 1, 1, 
+DEF_CMD("cos", 9, 0, 
     {
         WRITE_SINGLE_COMMAND(9);
     })
 
-DEF_CMD("tan", 1, 1, 
+DEF_CMD("tan", 10, 0, 
     {
         WRITE_SINGLE_COMMAND(10);
     })
 
-DEF_CMD("in", 1, 1, 
+DEF_CMD("in", 11, 0, 
     {
         WRITE_SINGLE_COMMAND(11);
     })
 
-DEF_CMD("hlt", 1, 1, 
+DEF_CMD("hlt", 12, 0, 
     {
         WRITE_SINGLE_COMMAND(12);
     })
