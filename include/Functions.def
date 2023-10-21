@@ -130,7 +130,29 @@ DEF_CMD("push", PUSH, 1,
             print_assembler_error(error, text->linesPtr[i], i+1);
             break;
         }
-    }, ;)
+    }, 
+    processor->IP++;
+
+    if ((int) command == (PUSH | IMM))
+    {
+        if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, 8))
+        {
+            RETURN(COPU_ARG_ERROR);
+        }
+
+        err = processor_push(commandArg, &(processor->stack));
+
+        processor->IP += 8;
+    }
+    else if ((int) command == (PUSH | REG))
+    {
+        reg = (registerNames) *(processor->CS + processor->IP);
+
+        err = processor_push_from_register(processor, reg);
+
+        processor->IP++;
+    }
+    )
 
 DEF_CMD("pop", POP, 1, 
     {
@@ -192,7 +214,18 @@ DEF_CMD("pop", POP, 1,
         {
             break;
         }
-    }, ;)
+    }, 
+    processor->IP++;
+
+    if ((int) command == (POP | REG))
+    {
+        reg = (registerNames) *(processor->CS + processor->IP);
+
+        err = processor_pop(processor, reg);
+
+        processor->IP++;
+    }
+    )
 
 DEF_CMD("add", ADD, 0, 
     {
