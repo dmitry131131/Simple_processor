@@ -5,7 +5,8 @@
 #ifndef PROCESSING_H
 #define PROCESSING_H
 
-const int DOUBLE_COEF = 10000;
+const int DOUBLE_COEF  = 10000;
+const int COMMAND_PART = 0b11111;
 
 #include "DSL.h"
 

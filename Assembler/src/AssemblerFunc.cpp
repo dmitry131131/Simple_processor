@@ -15,7 +15,7 @@
 
 enum asmErrorCode main_assembler_function(textData* text)
 {
-    #define DEF_CMD(name, num, args, asm_code)                  \
+    #define DEF_CMD(name, num, args, asm_code, proc_code)       \
         else if (!strcmp(command, name))                        \
         {                                                       \
             asm_code                                            \

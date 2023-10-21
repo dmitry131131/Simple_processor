@@ -1,11 +1,11 @@
 #define WRITE_SINGLE_COMMAND(num) do{                   \
                                                         \
-fprintf(outputTextFile, #num "\n");                     \
+fprintf(outputTextFile, "%d\n", (num));                 \
 write_char_to_buffer(&binBuffer, num);                  \
                                                         \
 }while(0)
 
-DEF_CMD("jmp", 14, 1, 
+DEF_CMD("jmp", JMP, 1, 
     {
         fprintf(outputTextFile, "99 ");
 
@@ -48,9 +48,9 @@ DEF_CMD("jmp", 14, 1,
         {
             break;
         }
-    })
+    }, ;)
 
-DEF_CMD("push", 1, 1, 
+DEF_CMD("push", PUSH, 1, 
     {
         char cmd = 0;
 
@@ -130,9 +130,9 @@ DEF_CMD("push", 1, 1,
             print_assembler_error(error, text->linesPtr[i], i+1);
             break;
         }
-    })
+    }, ;)
 
-DEF_CMD("pop", 13, 1, 
+DEF_CMD("pop", POP, 1, 
     {
         if (sscanf(text->linesPtr[i], "%s %s", command, registerName) != 2)
         {
@@ -192,61 +192,94 @@ DEF_CMD("pop", 13, 1,
         {
             break;
         }
-    })
+    }, ;)
 
-DEF_CMD("add", 2, 0, 
+DEF_CMD("add", ADD, 0, 
     {
-        WRITE_SINGLE_COMMAND(2);
-    })
+        WRITE_SINGLE_COMMAND(ADD);
+    },
+    err = processor_add(&(processor->stack));
+    processor->IP++;
+    )
 
-DEF_CMD("sub", 3, 0, 
+DEF_CMD("sub", SUB, 0, 
     {
-        WRITE_SINGLE_COMMAND(3);
-    })
+        WRITE_SINGLE_COMMAND(SUB);
+    },
+    err = processor_sub(&(processor->stack));
+    processor->IP++;
+    )
 
-DEF_CMD("mul", 4, 0, 
+DEF_CMD("mul", MUL, 0, 
     {
-        WRITE_SINGLE_COMMAND(4);
-    })
+        WRITE_SINGLE_COMMAND(MUL);
+    },
+    err = processor_mul(&(processor->stack));
+    processor->IP++;
+    )
 
-DEF_CMD("div", 5, 0, 
+DEF_CMD("div", DIV, 0, 
     {
-        WRITE_SINGLE_COMMAND(5);
-    })
+        WRITE_SINGLE_COMMAND(DIV);
+    },
+    err = processor_div(&(processor->stack));
+    processor->IP++;
+    )
 
-DEF_CMD("out", 6, 0, 
+DEF_CMD("out", OUT, 0, 
     {
-        WRITE_SINGLE_COMMAND(6);
-    })
+        WRITE_SINGLE_COMMAND(OUT);
+    },
+    err = processor_out(&(processor->stack), stdout);
+    processor->IP++;
+    )
 
-DEF_CMD("sqrt", 7, 0, 
+DEF_CMD("sqrt", SQRT, 0, 
     {
-        WRITE_SINGLE_COMMAND(7);
-    })
+        WRITE_SINGLE_COMMAND(SQRT);
+    },
+    err = processor_sqrt(&(processor->stack));
+    processor->IP++;
+    )
 
-DEF_CMD("sin", 8, 0, 
+DEF_CMD("sin", SIN, 0, 
     {
-        WRITE_SINGLE_COMMAND(8);
-    })
+        WRITE_SINGLE_COMMAND(SIN);
+    },
+    err = processor_trig(&(processor->stack), command);
+    processor->IP++;
+    )
 
-DEF_CMD("cos", 9, 0, 
+DEF_CMD("cos", COS, 0, 
     {
-        WRITE_SINGLE_COMMAND(9);
-    })
+        WRITE_SINGLE_COMMAND(COS);
+    },
+    err = processor_trig(&(processor->stack), command);
+    processor->IP++;
+    )
 
-DEF_CMD("tan", 10, 0, 
+DEF_CMD("tan", TAN, 0, 
     {
-        WRITE_SINGLE_COMMAND(10);
-    })
+        WRITE_SINGLE_COMMAND(TAN);
+    },
+    err = processor_trig(&(processor->stack), command);
+    processor->IP++;
+    )
 
-DEF_CMD("in", 11, 0, 
+DEF_CMD("in", IN, 0, 
     {
-        WRITE_SINGLE_COMMAND(11);
-    })
+        WRITE_SINGLE_COMMAND(IN);
+    },
+    err = processor_in(&(processor->stack));
+    processor->IP++;
+    )
 
-DEF_CMD("hlt", 12, 0, 
+DEF_CMD("hlt", HLT, 0, 
     {
-        WRITE_SINGLE_COMMAND(12);
-    })
+        WRITE_SINGLE_COMMAND(HLT);
+    },
+    err = processor_hlt(&(processor->stack));
+    processor->IP++;
+    )
 
 #undef WRITE_SINGLE_COMMAND

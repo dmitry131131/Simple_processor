@@ -25,8 +25,8 @@ enum commandCodes {
 };
 
 enum argumentsAddons {
-    IMM = 1 << 4,
-    REG = 1 << 5
+    IMM  = 1 << 5,
+    REG  = 1 << 6
 };
 
 enum registerNames {

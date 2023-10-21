@@ -23,6 +23,11 @@ enum processorErrorCode processing(softProcessorUnit* processor)
         return error;                       \
     }while(0)
 
+    #define DEF_CMD(name, num, arg, asm_code, proc_code)    \
+        case num:                                           \
+            proc_code                                       \
+            break;                                          
+
     commandCodes command = NO_COMMAND;
     double commandArg = NAN;
 
@@ -32,39 +37,44 @@ enum processorErrorCode processing(softProcessorUnit* processor)
     {
         processor_dump(processor, FULL);
         command = (commandCodes) *(processor->CS + processor->IP);
-        switch ((int) command)
+
+        switch ((int) (command & COMMAND_PART))
         {
-        case (PUSH | IMM):
+        case PUSH:
             processor->IP++;
-            if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, 8))
+
+            if ((int) command == (PUSH | IMM))
             {
-                RETURN(COPU_ARG_ERROR);
+                if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, 8))
+                {
+                    RETURN(COPU_ARG_ERROR);
+                }
+
+                err = processor_push(commandArg, &(processor->stack));
+
+                processor->IP += 8;
             }
+            else if ((int) command == (PUSH | REG))
+            {
+                reg = (registerNames) *(processor->CS + processor->IP);
 
-            err = processor_push(commandArg, &(processor->stack));
+                err = processor_push_from_register(processor, reg);
 
-            processor->IP += 8;
+                processor->IP++;
+            }
             break;
 
-        case (PUSH | REG):
+        case POP:
             processor->IP++;
 
-            reg = (registerNames) *(processor->CS + processor->IP);
+            if ((int) command == (POP | REG))
+            {
+                reg = (registerNames) *(processor->CS + processor->IP);
 
-            err = processor_push_from_register(processor, reg);
+                err = processor_pop(processor, reg);
 
-            processor->IP++;
-            break;
-
-        case (POP | REG):
-            processor->IP++;
-
-            reg = (registerNames) *(processor->CS + processor->IP);
-
-            err = processor_pop(processor, reg);
-
-            processor->IP++;
-
+                processor->IP++;
+            }
             break;
 
         case JMP:
@@ -126,14 +136,14 @@ enum processorErrorCode processing(softProcessorUnit* processor)
         }
     }
 
-    if (processor_dtor(processor))
-    {
-        RETURN(DTOR_ERROR);
-    }
-
     if (err)
     {
         RETURN(err);
+    }
+
+    if (processor_dtor(processor))
+    {
+        RETURN(DTOR_ERROR);
     }
 
     #undef RETURN
