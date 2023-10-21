@@ -14,7 +14,6 @@ asmErrorCode buffer_ctor(outputBuffer* buffer, size_t size)
     assert(buffer);
 
     buffer->Buffer  = NULL;
-
     buffer->bufferPointer = 0;
 
     if (create_command_buffer(&(buffer->Buffer), size))
@@ -30,9 +29,7 @@ asmErrorCode buffer_dtor(outputBuffer* buffer)
     assert(buffer);
 
     free(buffer->Buffer);
-
     buffer->Buffer  = NULL;
-
     buffer->bufferPointer = 0;
 
     return NO_ASSEMBLER_ERRORS;
@@ -58,7 +55,6 @@ asmErrorCode create_output_file(FILE** file, const char* filename, fileCreateMod
     }
 
     *file = fopen(filename, mode);
-
     if (!file)
     {
         return FILE_CREATING_ERROR;
@@ -84,7 +80,6 @@ asmErrorCode create_command_buffer(char** buffer, size_t size)
 asmErrorCode write_header_info(FILE* outputTextFile, FILE* outputBinFile, int version, size_t commandCount)
 {
     assert(outputBinFile);
-
     assert(outputTextFile);
     
     fprintf(outputTextFile, "AD\n");

@@ -9,13 +9,7 @@ const int TAG_BUFFER_SIZE  = 100;
 const int MAX_COMMAND_LEN  = 150;
 const int MAX_REGISTER_LEN = 10;
 
-enum registerNames {
-    NO_NAME_REG = 0,
-    RAX         = 1,
-    RBX         = 2,
-    RCX         = 3,
-    RDX         = 4
-};
+#include "DSL.h"
 
 struct Tag {
     char name[150];

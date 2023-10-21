@@ -24,6 +24,11 @@ enum commandCodes {
     JMP         = 14
 };
 
+enum argumentsAddons {
+    IMM = 1 << 4,
+    REG = 1 << 5
+};
+
 enum registerNames {
     NO_REG  = 0,
     RAX     = 1,

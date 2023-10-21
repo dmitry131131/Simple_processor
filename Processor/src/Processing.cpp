@@ -34,7 +34,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
         command = (commandCodes) *(processor->CS + processor->IP);
         switch ((int) command)
         {
-        case (PUSH | 1 << 4):
+        case (PUSH | IMM):
             processor->IP++;
             if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, 8))
             {
@@ -46,7 +46,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
             processor->IP += 8;
             break;
 
-        case (PUSH | 1 << 5):
+        case (PUSH | REG):
             processor->IP++;
 
             reg = (registerNames) *(processor->CS + processor->IP);
@@ -56,7 +56,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
             processor->IP++;
             break;
 
-        case (POP | 1 << 5):
+        case (POP | REG):
             processor->IP++;
 
             reg = (registerNames) *(processor->CS + processor->IP);
