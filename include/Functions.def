@@ -36,11 +36,7 @@ DEF_CMD("jmp", JMP, 1,
         }
 
         tagIp = -1;
-        if ((error = get_tag_ip(&tagBuffer, tagName, &tagIp)))
-        {
-            print_assembler_error(error, text->linesPtr[i], i+1);
-            break;
-        }
+        get_tag_ip(tagBuffer, tagName, &tagIp);
 
         fprintf(outputTextFile, "%d\n", tagIp);
         

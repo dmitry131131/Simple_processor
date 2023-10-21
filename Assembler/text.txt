@@ -3,5 +3,7 @@ in
 pop rax
 push rax
 add
+jmp hh
 Out
+:hh
 hlt

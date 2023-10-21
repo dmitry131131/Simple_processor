@@ -21,17 +21,7 @@ struct TagBuffer {
     Tag*   bufferName;
 };
 
-#define DESTRUCT_ALL_BUFFERS_AND_RETURN do{     \
-                                                \
-    error = buffer_dtor(&binBuffer);            \
-    error = tag_buffer_dtor(&tagBuffer);        \
-                                                \
-    fclose(outputTextFile);                     \
-    fclose(outputBinFile);                      \
-                                                \
-}while(0)
-
-enum asmErrorCode main_assembler_function(textData* text);
+enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer);
 
 asmErrorCode tag_buffer_ctor(TagBuffer* tag);
 

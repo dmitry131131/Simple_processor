@@ -13,7 +13,7 @@
 #include "AsmOut.h"
 #include "AssemblerFunc.h"                                          
 
-enum asmErrorCode main_assembler_function(textData* text)
+enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
 {
     #define DEF_CMD(name, num, args, asm_code, proc_code)       \
         else if (!strcmp(command, name))                        \
@@ -21,7 +21,17 @@ enum asmErrorCode main_assembler_function(textData* text)
             asm_code                                            \
         } 
 
+    #define DESTRUCT_ALL_BUFFERS_AND_RETURN do{     \
+                                                    \
+        error = buffer_dtor(&binBuffer);            \
+                                                    \
+        fclose(outputTextFile);                     \
+        fclose(outputBinFile);                      \
+                                                    \
+    }while(0)
+
     assert(text);
+    assert(tagBuffer);
 
     outputBuffer binBuffer  = {};
     asmErrorCode error      = NO_ASSEMBLER_ERRORS;
@@ -46,13 +56,6 @@ enum asmErrorCode main_assembler_function(textData* text)
         return error;
     }
 
-    TagBuffer tagBuffer = {};
-    if ((error = tag_buffer_ctor(&tagBuffer)))
-    {
-        return error;
-    }
-
-
     write_header_info(outputTextFile, outputBinFile, 1, text->linesCount);
 
     for (size_t i = 0; i < text->linesCount; i++)
@@ -70,7 +73,7 @@ enum asmErrorCode main_assembler_function(textData* text)
 
         if (command[0] == ':')
         {
-            add_tag_to_buffer((command + 1), binBuffer.bufferPointer, &tagBuffer);
+            add_tag_to_buffer((command + 1), binBuffer.bufferPointer, tagBuffer);
         }
 
         #include "Functions.def"
@@ -98,6 +101,7 @@ enum asmErrorCode main_assembler_function(textData* text)
     DESTRUCT_ALL_BUFFERS_AND_RETURN;
 
     #undef DEF_CMD
+    #undef DESTRUCT_ALL_BUFFERS_AND_RETURN
 
     return NO_ASSEMBLER_ERRORS;
 }
