@@ -56,7 +56,7 @@ enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
         return error;
     }
 
-    write_header_info(outputTextFile, outputBinFile, 1, text->linesCount);
+    size_t commandCount = 0;
 
     for (size_t i = 0; i < text->linesCount; i++)
     {
@@ -92,6 +92,8 @@ enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
 
         return error;
     }
+
+    write_header_info(outputTextFile, outputBinFile, VERSION, commandCount);
 
     if ((error = write_buffer_to_file(outputBinFile, &binBuffer)))
     {

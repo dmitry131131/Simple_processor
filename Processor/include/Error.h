@@ -5,7 +5,7 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-const int VERSION = 1;
+const int VERSION = 2;
 
 enum processorErrorCode {
     NO_PROCESSOR_ERRORS,
@@ -29,7 +29,8 @@ enum processorErrorCode {
     STACK_CTOR_ERROR,
     CALLOC_ERROR,
     READ_PROGRAMM_BODY_ERROR,
-    BAD_FILENAME
+    BAD_FILENAME,
+    BAD_IP
 };
 
 void print_processor_error_message(FILE* stream, processorErrorCode error);

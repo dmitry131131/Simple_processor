@@ -200,6 +200,10 @@ processorErrorCode dump_CS_info(const softProcessorUnit* processor, size_t buffe
         {
             colorCounter = 8;
         }
+        else if (processor->CS[i] == JMP)
+        {
+            colorCounter = 4;
+        }
         else if (processor->CS[i] == (PUSH | REG) || processor->CS[i] == (POP | REG))
         {
             colorCounter = 1;
@@ -230,8 +234,12 @@ processorErrorCode count_len_of_buffer(const softProcessorUnit* processor, size_
             (*bufferLen) += 9;
         }
 
-        else if ((int) processor->CS[*bufferLen] == (PUSH | REG) || (int) processor->CS[*bufferLen] == 11 
-              || (int) processor->CS[*bufferLen] == (POP | REG))
+        else if ((int) processor->CS[*bufferLen] == JMP)
+        {
+            (*bufferLen) += 5;
+        }
+
+        else if ((int) processor->CS[*bufferLen] == (PUSH | REG) || (int) processor->CS[*bufferLen] == (POP | REG))
         {
             (*bufferLen) += 2;
         }

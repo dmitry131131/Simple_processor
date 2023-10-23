@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 
 #include "Error.h"
 #include "Stack.h"
@@ -38,7 +39,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
         processor_dump(processor, FULL);
         command = (commandCodes) *(processor->CS + processor->IP);
 
-        switch ((int) (command & COMMAND_PART))
+        switch (command & COMMAND_PART)
         {
         
         #include "Functions.def"
@@ -64,18 +65,23 @@ enum processorErrorCode processing(softProcessorUnit* processor)
     return NO_PROCESSOR_ERRORS;
 }
 
-processorErrorCode processor_jmp()
+processorErrorCode processor_jmp(softProcessorUnit* processor, int ip)
 {
-    
+    assert(processor);
+
+    if (ip < 0)
+    {
+        return BAD_IP;
+    }
+
+    processor->IP = (size_t) ip;
+
     return NO_PROCESSOR_ERRORS;
 }
 
 processorErrorCode processor_pop(softProcessorUnit* processor, registerNames reg)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
 
     int data = STACK_POP(&(processor->stack));
     
@@ -110,10 +116,7 @@ processorErrorCode processor_pop(softProcessorUnit* processor, registerNames reg
 
 processorErrorCode processor_push_from_register(softProcessorUnit* processor, registerNames reg)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
 
     int data = 0;
     switch (reg)
@@ -152,10 +155,7 @@ processorErrorCode processor_push_from_register(softProcessorUnit* processor, re
 
 enum processorErrorCode processor_push(double num, Stack* stack)
 {
-    if (!stack)
-    {
-        return NULL_POINTER;
-    }
+    assert(stack);
 
     int intNum = (int) (num * DOUBLE_COEF);
 
@@ -169,6 +169,8 @@ enum processorErrorCode processor_push(double num, Stack* stack)
 
 enum processorErrorCode processor_add(Stack* stack)
 {
+    assert(stack);
+
     int intNum2 = STACK_POP(stack);
     int intNum1 = STACK_POP(stack);
 
@@ -187,6 +189,8 @@ enum processorErrorCode processor_add(Stack* stack)
 
 enum processorErrorCode processor_sub(Stack* stack)
 {
+    assert(stack);
+
     int intNum2 = STACK_POP(stack);
     int intNum1 = STACK_POP(stack);
 
@@ -205,6 +209,8 @@ enum processorErrorCode processor_sub(Stack* stack)
 
 enum processorErrorCode processor_mul(Stack* stack)
 {
+    assert(stack);
+
     int intNum2 = STACK_POP(stack);
     int intNum1 = STACK_POP(stack);
 
@@ -223,6 +229,8 @@ enum processorErrorCode processor_mul(Stack* stack)
 
 enum processorErrorCode processor_div(Stack* stack)
 {
+    assert(stack);
+
     int intNum2 = STACK_POP(stack);
     int intNum1 = STACK_POP(stack);
 
@@ -246,6 +254,8 @@ enum processorErrorCode processor_div(Stack* stack)
 
 enum processorErrorCode processor_out(Stack* stack, FILE* stream)
 {
+    assert(stack);
+
     int num = STACK_POP(stack);
 
     if (num == ELEM_T_POISON)
@@ -260,6 +270,8 @@ enum processorErrorCode processor_out(Stack* stack, FILE* stream)
 
 enum processorErrorCode processor_sqrt(Stack* stack)
 {
+    assert(stack);
+
     int num = STACK_POP(stack);
 
     if (num == ELEM_T_POISON)
@@ -277,6 +289,8 @@ enum processorErrorCode processor_sqrt(Stack* stack)
 
 enum processorErrorCode processor_trig(Stack* stack, commandCodes mode)
 {
+    assert(stack);
+
     int num = STACK_POP(stack);
 
     if (num == ELEM_T_POISON)
@@ -313,10 +327,7 @@ enum processorErrorCode processor_trig(Stack* stack, commandCodes mode)
 
 enum processorErrorCode processor_in(Stack* stack)
 { 
-    if (!stack)
-    {
-        return NULL_POINTER;
-    }
+    assert(stack);
 
     double num = NAN;
 
@@ -337,6 +348,7 @@ enum processorErrorCode processor_in(Stack* stack)
 
 enum processorErrorCode processor_hlt(Stack* stack)
 {
-
+    assert(stack);
+    
     return NO_PROCESSOR_ERRORS;
 }

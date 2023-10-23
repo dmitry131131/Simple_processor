@@ -4,6 +4,7 @@ pop rax
 push rax
 add
 jmp hh
-Out
+hlt
 :hh
+out
 hlt

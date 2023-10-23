@@ -1,12 +1,13 @@
 #define WRITE_SINGLE_COMMAND(num) do{                   \
-                                                        \
-fprintf(outputTextFile, "%d\n", (num));                 \
-write_char_to_buffer(&binBuffer, num);                  \
+    commandCount++;                                     \
+    fprintf(outputTextFile, "%d\n", (num));             \
+    write_char_to_buffer(&binBuffer, num);              \
                                                         \
 }while(0)
 
 DEF_CMD("jmp", JMP, 1, 
     {
+        commandCount++;
         fprintf(outputTextFile, "99 ");
 
         if ((error = write_char_to_buffer(&binBuffer, 14)))
@@ -37,17 +38,30 @@ DEF_CMD("jmp", JMP, 1,
 
         tagIp = -1;
         get_tag_ip(tagBuffer, tagName, &tagIp);
-
-        fprintf(outputTextFile, "%d\n", tagIp);
-        
-        if ((error = write_int_to_buffer(&binBuffer, tagIp)))
+  
+        fprintf(outputTextFile, "%d\n", tagIp);  
+          
+        if ((error = write_int_to_buffer(&binBuffer, tagIp)))  
         {
             break;
         }
-    }, ;)
+    }, 
+    {
+    processor->IP++;
+
+    int newIp = -1;   
+    if (copy_data_from_buffer(processor->CS + processor->IP, &newIp, sizeof(int)))
+    {
+        RETURN(COPU_ARG_ERROR);
+    }
+    printf("jmp - %d\n", newIp);
+    err = processor_jmp(processor, newIp);
+    }
+    )
 
 DEF_CMD("push", PUSH, 1, 
     {
+        commandCount++;
         char cmd = 0;
 
         if(sscanf(text->linesPtr[i], "%s %lf", command, &commandArg) == 2)
@@ -131,7 +145,7 @@ DEF_CMD("push", PUSH, 1,
 
     if ((int) command == (PUSH | IMM))
     {
-        if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, 8))
+        if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, sizeof(double)))
         {
             RETURN(COPU_ARG_ERROR);
         }
@@ -152,6 +166,7 @@ DEF_CMD("push", PUSH, 1,
 
 DEF_CMD("pop", POP, 1, 
     {
+        commandCount++;
         if (sscanf(text->linesPtr[i], "%s %s", command, registerName) != 2)
         {
             error = INVALID_SYNTAX;
@@ -309,6 +324,7 @@ DEF_CMD("hlt", HLT, 0,
     },
     err = processor_hlt(&(processor->stack));
     processor->IP++;
+    RETURN(NO_PROCESSOR_ERRORS);
     )
 
 #undef WRITE_SINGLE_COMMAND

@@ -47,6 +47,8 @@ enum processorErrorCode processor_trig(Stack* stack, commandCodes mode);
 
 enum processorErrorCode processor_in(Stack* stack);
 
+processorErrorCode processor_jmp(softProcessorUnit* processor, int ip);
+
 enum processorErrorCode processor_hlt(Stack* stack);
 
 #endif
