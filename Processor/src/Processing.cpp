@@ -79,6 +79,67 @@ processorErrorCode processor_jmp(softProcessorUnit* processor, int ip)
     return NO_PROCESSOR_ERRORS;
 }
 
+#define JUMP_PATTERN(sign) do{                                              \
+        assert(processor);                                                  \
+                                                                            \
+        if (ip < 0)                                                         \
+        {                                                                   \
+            return BAD_IP;                                                  \
+        }                                                                   \
+                                                                            \
+        int first_num  = STACK_POP(&(processor->stack));                    \
+        int second_num = STACK_POP(&(processor->stack));                    \
+                                                                            \
+        if (first_num == ELEM_T_POISON || second_num == ELEM_T_POISON)      \
+        {                                                                   \
+            return POP_ERROR;                                               \
+        }                                                                   \
+                                                                            \
+        processorErrorCode error = NO_PROCESSOR_ERRORS;                     \
+        if (first_num sign second_num)                                      \
+        {                                                                   \
+            error = processor_jmp(processor, ip);                           \
+        }                                                                   \
+        else                                                                \
+        {                                                                   \
+            processor->IP += sizeof(int);                                   \
+        }                                                                   \
+                                                                            \
+        return error;                                                       \
+    }while(0)                        
+
+processorErrorCode processor_ja(softProcessorUnit* processor, int ip)
+{
+    JUMP_PATTERN(<);
+}
+
+processorErrorCode processor_jae(softProcessorUnit* processor, int ip)
+{
+    JUMP_PATTERN(<=);
+}
+
+processorErrorCode processor_jb(softProcessorUnit* processor, int ip)
+{
+    JUMP_PATTERN(>);
+}
+
+processorErrorCode processor_jbe(softProcessorUnit* processor, int ip)
+{
+    JUMP_PATTERN(>=);
+}
+
+processorErrorCode processor_je(softProcessorUnit* processor, int ip)
+{
+    JUMP_PATTERN(==);
+}
+
+processorErrorCode processor_jne(softProcessorUnit* processor, int ip)
+{
+    JUMP_PATTERN(!=);
+}
+
+#undef JUMP_PATTERN
+
 processorErrorCode processor_pop(softProcessorUnit* processor, registerNames reg)
 {
     assert(processor);

@@ -5,59 +5,115 @@
                                                         \
 }while(0)
 
+#define JUMP_ASSEMBLER(jmp_type) {                                              \
+    commandCount++;                                                             \
+    fprintf(outputTextFile, "%d ", jmp_type);                                   \
+                                                                                \
+    if ((error = write_char_to_buffer(&binBuffer, jmp_type)))                   \
+    {                                                                           \
+        break;                                                                  \
+    }                                                                           \
+                                                                                \
+    int tagIp = -1;                                                             \
+    if (sscanf(text->linesPtr[i], "%s %d", command, &tagIp) == 2)               \
+    {                                                                           \
+        fprintf(outputTextFile, "%d\n", tagIp);                                 \
+                                                                                \
+        if ((error = write_int_to_buffer(&binBuffer, tagIp)))                   \
+        {                                                                       \
+            break;                                                              \
+        }                                                                       \
+        continue;                                                               \
+    }                                                                           \
+                                                                                \
+    char tagName[MAX_COMMAND_LEN] = {};                                         \
+                                                                                \
+    if (sscanf(text->linesPtr[i], "%s %s", command, tagName) != 2)              \
+    {                                                                           \
+        error = INVALID_SYNTAX;                                                 \
+        print_assembler_error(error, text->linesPtr[i], i+1);                   \
+        break;                                                                  \
+    }                                                                           \
+                                                                                \
+    tagIp = -1;                                                                 \
+    get_tag_ip(tagBuffer, tagName, &tagIp);                                     \
+                                                                                \
+    fprintf(outputTextFile, "%d\n", tagIp);                                     \
+                                                                                \
+    if ((error = write_int_to_buffer(&binBuffer, tagIp)))                       \
+    {                                                                           \
+        break;                                                                  \
+    }                                                                           \
+}
+
+#define JUMP_PROCESSOR                                                                  \
+    processor->IP++;                                                                    \
+                                                                                        \
+    int newIp = -1;                                                                     \
+    if (copy_data_from_buffer(processor->CS + processor->IP, &newIp, sizeof(int)))      \
+    {                                                                                   \
+        RETURN(COPU_ARG_ERROR);                                                         \
+    }                                                                                   
+
+
 DEF_CMD("jmp", JMP, 1, 
+    JUMP_ASSEMBLER(JMP), 
     {
-        commandCount++;
-        fprintf(outputTextFile, "99 ");
+        JUMP_PROCESSOR
 
-        if ((error = write_char_to_buffer(&binBuffer, 14)))
-        {
-            break;
-        }
-
-        int tagIp = -1;
-        if (sscanf(text->linesPtr[i], "%s %d", command, &tagIp) == 2)
-        {
-            fprintf(outputTextFile, "%d\n", tagIp);
-        
-            if ((error = write_int_to_buffer(&binBuffer, tagIp)))
-            {
-                break;
-            }
-            continue;
-        }
-
-        char tagName[MAX_COMMAND_LEN] = {};
-
-        if (sscanf(text->linesPtr[i], "%s %s", command, tagName) != 2)
-        {
-            error = INVALID_SYNTAX;
-            print_assembler_error(error, text->linesPtr[i], i+1);
-            break;
-        }
-
-        tagIp = -1;
-        get_tag_ip(tagBuffer, tagName, &tagIp);
-  
-        fprintf(outputTextFile, "%d\n", tagIp);  
-          
-        if ((error = write_int_to_buffer(&binBuffer, tagIp)))  
-        {
-            break;
-        }
-    }, 
-    {
-    processor->IP++;
-
-    int newIp = -1;   
-    if (copy_data_from_buffer(processor->CS + processor->IP, &newIp, sizeof(int)))
-    {
-        RETURN(COPU_ARG_ERROR);
-    }
-    printf("jmp - %d\n", newIp);
-    err = processor_jmp(processor, newIp);
+        err = processor_jmp(processor, newIp);
     }
     )
+
+DEF_CMD("ja", JA, 1,
+JUMP_ASSEMBLER(JA),
+{
+    JUMP_PROCESSOR
+
+    err = processor_ja(processor, newIp);
+})
+
+DEF_CMD("jae", JAE, 1,
+JUMP_ASSEMBLER(JAE),
+{
+    JUMP_PROCESSOR
+
+    err = processor_jae(processor, newIp);
+})
+
+DEF_CMD("jb", JB, 1,
+JUMP_ASSEMBLER(JB),
+{
+    JUMP_PROCESSOR
+
+    err = processor_jb(processor, newIp);
+})
+
+DEF_CMD("jbe", JBE, 1,
+JUMP_ASSEMBLER(JBE),
+{
+    JUMP_PROCESSOR
+
+    err = processor_jbe(processor, newIp);
+})
+
+DEF_CMD("je", JE, 1,
+JUMP_ASSEMBLER(JE),
+{
+    JUMP_PROCESSOR
+
+    err = processor_je(processor, newIp);
+})
+
+DEF_CMD("jne", JNE, 1,
+JUMP_ASSEMBLER(JNE),
+{
+    JUMP_PROCESSOR
+
+    err = processor_jne(processor, newIp);
+})
+
+#undef JUMP_ASSEMBLER
 
 DEF_CMD("push", PUSH, 1, 
     {
@@ -141,26 +197,28 @@ DEF_CMD("push", PUSH, 1,
             break;
         }
     }, 
-    processor->IP++;
-
-    if ((int) command == (PUSH | IMM))
     {
-        if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, sizeof(double)))
-        {
-            RETURN(COPU_ARG_ERROR);
-        }
-
-        err = processor_push(commandArg, &(processor->stack));
-
-        processor->IP += 8;
-    }
-    else if ((int) command == (PUSH | REG))
-    {
-        reg = (registerNames) *(processor->CS + processor->IP);
-
-        err = processor_push_from_register(processor, reg);
-
         processor->IP++;
+
+        if ((int) command == (PUSH | IMM))
+        {
+            if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, sizeof(double)))
+            {
+                RETURN(COPU_ARG_ERROR);
+            }
+
+            err = processor_push(commandArg, &(processor->stack));
+
+            processor->IP += 8;
+        }
+        else if ((int) command == (PUSH | REG))
+        {
+            reg = (registerNames) *(processor->CS + processor->IP);
+
+            err = processor_push_from_register(processor, reg);
+
+            processor->IP++;
+        }
     }
     )
 

@@ -49,6 +49,18 @@ enum processorErrorCode processor_in(Stack* stack);
 
 processorErrorCode processor_jmp(softProcessorUnit* processor, int ip);
 
+processorErrorCode processor_ja(softProcessorUnit* processor, int ip);
+
+processorErrorCode processor_jae(softProcessorUnit* processor, int ip);
+
+processorErrorCode processor_jb(softProcessorUnit* processor, int ip);
+
+processorErrorCode processor_jbe(softProcessorUnit* processor, int ip);
+
+processorErrorCode processor_je(softProcessorUnit* processor, int ip);
+
+processorErrorCode processor_jne(softProcessorUnit* processor, int ip);
+
 enum processorErrorCode processor_hlt(Stack* stack);
 
 #endif

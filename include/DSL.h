@@ -21,7 +21,13 @@ enum commandCodes {
     IN          = 11,
     HLT         = 12,
     POP         = 13,
-    JMP         = 14
+    JMP         = 14,
+    JA          = 15,
+    JAE         = 16,
+    JB          = 17,
+    JBE         = 18,
+    JE          = 19,
+    JNE         = 20
 };
 
 enum argumentsAddons {
