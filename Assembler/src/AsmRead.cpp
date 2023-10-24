@@ -12,6 +12,9 @@
 #include "InputOutput.h"
 #include "AsmRead.h"
 
+static textData* text_to_lower(textData* text);
+static textData* remove_comments_from_text(textData* text);
+
 textData* asm_prepare(const char* filename)
 {
     assert(filename);
@@ -34,7 +37,7 @@ textData* asm_prepare(const char* filename)
     return &text;
 }
 
-textData* text_to_lower(textData* text)
+static textData* text_to_lower(textData* text)
 {
     assert(text);
 
@@ -46,7 +49,7 @@ textData* text_to_lower(textData* text)
     return text;
 }
 
-textData* remove_comments_from_text(textData* text)
+static textData* remove_comments_from_text(textData* text)
 {
     assert(text);
 

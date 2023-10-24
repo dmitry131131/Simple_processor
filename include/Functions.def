@@ -1,50 +1,50 @@
-#define WRITE_SINGLE_COMMAND(num) do{                   \
-    commandCount++;                                     \
-    fprintf(outputTextFile, "%d\n", (num));             \
-    write_char_to_buffer(&binBuffer, num);              \
-                                                        \
+#define WRITE_SINGLE_COMMAND(num) do{                                                                                   \
+    commandCount++;                                                                                                     \
+    textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d\n", (num));        \
+    write_char_to_buffer(&binBuffer, num);                                                                              \
+                                                                                                                        \
 }while(0)
 
-#define JUMP_ASSEMBLER(jmp_type) {                                              \
-    commandCount++;                                                             \
-    fprintf(outputTextFile, "%d ", jmp_type);                                   \
-                                                                                \
-    if ((error = write_char_to_buffer(&binBuffer, jmp_type)))                   \
-    {                                                                           \
-        break;                                                                  \
-    }                                                                           \
-                                                                                \
-    int tagIp = -1;                                                             \
-    if (sscanf(text->linesPtr[i], "%s %d", command, &tagIp) == 2)               \
-    {                                                                           \
-        fprintf(outputTextFile, "%d\n", tagIp);                                 \
-                                                                                \
-        if ((error = write_int_to_buffer(&binBuffer, tagIp)))                   \
-        {                                                                       \
-            break;                                                              \
-        }                                                                       \
-        continue;                                                               \
-    }                                                                           \
-                                                                                \
-    char tagName[MAX_COMMAND_LEN] = {};                                         \
-                                                                                \
-    if (sscanf(text->linesPtr[i], "%s %s", command, tagName) != 2)              \
-    {                                                                           \
-        error = INVALID_SYNTAX;                                                 \
-        print_assembler_error(error, text->linesPtr[i], i+1);                   \
-        break;                                                                  \
-    }                                                                           \
-                                                                                \
-    tagIp = -1;                                                                 \
-    get_tag_ip(tagBuffer, tagName, &tagIp);                                     \
-                                                                                \
-    fprintf(outputTextFile, "%d\n", tagIp);                                     \
-                                                                                \
-    if ((error = write_int_to_buffer(&binBuffer, tagIp)))                       \
-    {                                                                           \
-        break;                                                                  \
-    }                                                                           \
-}
+#define JUMP_ASSEMBLER(jmp_type) {                                                                                      \
+    commandCount++;                                                                                                     \
+    textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d ", jmp_type);      \
+                                                                                                                        \
+    if ((error = write_char_to_buffer(&binBuffer, jmp_type)))                                                           \
+    {                                                                                                                   \
+        break;                                                                                                          \
+    }                                                                                                                   \
+                                                                                                                        \
+    int tagIp = -1;                                                                                                     \
+    if (sscanf(text->linesPtr[i], "%s %d", command, &tagIp) == 2)                                                       \
+    {                                                                                                                   \
+        textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d\n", tagIp);    \
+                                                                                                                        \
+        if ((error = write_int_to_buffer(&binBuffer, tagIp)))                                                           \
+        {                                                                                                               \
+            break;                                                                                                      \
+        }                                                                                                               \
+        continue;                                                                                                       \
+    }                                                                                                                   \
+                                                                                                                        \
+    char tagName[MAX_COMMAND_LEN] = {};                                                                                 \
+                                                                                                                        \
+    if (sscanf(text->linesPtr[i], "%s %s", command, tagName) != 2)                                                      \
+    {                                                                                                                   \
+        error = INVALID_SYNTAX;                                                                                         \
+        print_assembler_error(error, text->linesPtr[i], i+1);                                                           \
+        break;                                                                                                          \
+    }                                                                                                                   \
+                                                                                                                        \
+    tagIp = -1;                                                                                                         \
+    get_tag_ip(tagBuffer, tagName, &tagIp);                                                                             \
+                                                                                                                        \
+    textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d\n", tagIp);        \
+                                                                                                                        \
+    if ((error = write_int_to_buffer(&binBuffer, tagIp)))                                                               \
+    {                                                                                                                   \
+        break;                                                                                                          \
+    }                                                                                                                   \
+}       
 
 #define JUMP_PROCESSOR                                                                  \
     processor->IP++;                                                                    \
@@ -124,7 +124,7 @@ DEF_CMD("push", PUSH, 1,
         {
             cmd |= (PUSH | IMM);
 
-            fprintf(outputTextFile, "17 %lf\n", commandArg);
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "17 %lf\n", commandArg);
 
             if ((error = write_char_to_buffer(&binBuffer, cmd)))
             {
@@ -143,7 +143,7 @@ DEF_CMD("push", PUSH, 1,
 
             registerNames reg = NO_REG;
 
-            fprintf(outputTextFile, "33 ");
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "33 ");
 
             if ((error = write_char_to_buffer(&binBuffer, cmd)))
             {
@@ -182,7 +182,7 @@ DEF_CMD("push", PUSH, 1,
 
             if (error) break;
 
-            fprintf(outputTextFile, "%d\n", reg);
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d\n", reg);
 
             if ((error = write_char_to_buffer(&binBuffer, reg)))
             {
@@ -238,7 +238,7 @@ DEF_CMD("pop", POP, 1,
 
         registerNames reg = NO_REG;
 
-        fprintf(outputTextFile, "45 ");
+        textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "45 ");
 
         if ((error = write_char_to_buffer(&binBuffer, cmd)))
         {
@@ -277,7 +277,7 @@ DEF_CMD("pop", POP, 1,
 
         if (error) break;
 
-        fprintf(outputTextFile, "%d\n", reg);
+        textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d\n", reg);
 
         if ((error = write_char_to_buffer(&binBuffer, reg)))
         {

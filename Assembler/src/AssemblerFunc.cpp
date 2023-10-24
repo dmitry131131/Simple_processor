@@ -26,6 +26,7 @@ enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
     #define DESTRUCT_ALL_BUFFERS_AND_RETURN do{     \
                                                     \
         error = buffer_dtor(&binBuffer);            \
+        error = buffer_dtor(&textBuffer);           \
                                                     \
         fclose(outputTextFile);                     \
         fclose(outputBinFile);                      \
@@ -36,9 +37,16 @@ enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
     assert(tagBuffer);
 
     outputBuffer binBuffer  = {};
+    outputBuffer textBuffer = {};
     asmErrorCode error      = NO_ASSEMBLER_ERRORS;
 
     if ((error = buffer_ctor(&binBuffer, text->bufferSize * 4)))
+    {
+        assert(!error);
+        return error;
+    }
+
+    if ((error = buffer_ctor(&textBuffer, text->bufferSize * 2)))
     {
         assert(!error);
         return error;
@@ -100,6 +108,11 @@ enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
     write_header_info(outputTextFile, outputBinFile, VERSION, commandCount);
 
     if ((error = write_buffer_to_file(outputBinFile, &binBuffer)))
+    {
+        return error;
+    }
+
+    if ((error = write_buffer_to_file(outputTextFile, &textBuffer)))
     {
         return error;
     }
