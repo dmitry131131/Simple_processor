@@ -11,7 +11,9 @@
 #include "InputOutput.h"
 #include "AsmErrors.h"
 #include "AsmOut.h"
-#include "AssemblerFunc.h"                                          
+#include "AssemblerFunc.h"
+
+static bool check_line_availability(const char* string);
 
 enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
 {
@@ -63,6 +65,8 @@ enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
         char command[MAX_COMMAND_LEN]       = {};
         double commandArg                   = 0;
         char registerName[MAX_REGISTER_LEN] = {};
+
+        if (!check_line_availability(text->linesPtr[i])) continue;
 
         if(sscanf(text->linesPtr[i], "%s", command) != 1)
         {
@@ -172,4 +176,17 @@ asmErrorCode get_tag_ip(TagBuffer* tagBuffer, const char* tagName, int* ip)
     }
 
     return TAG_NOT_FOUND;
+}
+
+static bool check_line_availability(const char* string)
+{
+    assert(string);
+
+    while ((*string) != 0)
+    {
+        if (((*string) >= 'a') && ((*string) <= 'z')) return true;
+        string++;
+    }
+
+    return false;
 }
