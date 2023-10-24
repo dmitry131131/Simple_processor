@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "Error.h"
 #include "Stack.h"
@@ -9,12 +10,9 @@
 
 processorErrorCode processor_verify(softProcessorUnit* processor)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
     
-    if (STACK_VERIFY(&(processor->stack)))
+    if ((STACK_VERIFY(&(processor->stack))) || (STACK_VERIFY(&(processor->retStack))))
     {
         return VERIFY_ERROR;
     }
@@ -24,20 +22,19 @@ processorErrorCode processor_verify(softProcessorUnit* processor)
 
 processorErrorCode processor_ctor(softProcessorUnit* processor)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
 
     processor->stack = {};
+    processor->retStack = {};
     processor->IP = 0;
     processor->rax = processor->rbx = processor->rcx = processor->rdx = 0;
     processor->commandCount = 0;
-    processor->CS = NULL; //(int*) calloc(commandCount + 1, sizeof(int));
+    processor->CS = NULL;
 
     STACK_CTOR(&(processor->stack), 10);
+    STACK_CTOR(&(processor->retStack), 10);
 
-    if (processor->stack.stackErrors)
+    if (processor->stack.stackErrors || processor->retStack.stackErrors)
     {
         return STACK_CTOR_ERROR;
     }
@@ -69,6 +66,7 @@ processorErrorCode processor_dtor(softProcessorUnit* processor)
     free(processor->CS);
 
     STACK_DTOR(&(processor->stack));
+    STACK_DTOR(&(processor->retStack));
 
     return NO_PROCESSOR_ERRORS;
 }
@@ -85,24 +83,42 @@ processorErrorCode processor_dump(softProcessorUnit* processor, dumpMode mode)
         return NULL_POINTER;
     }
 
-    if (mode != STACK_ONLY)
+    switch (mode)
     {
+    case FULL:
         if (write_register_values(processor)) return NULL_POINTER;
         if (processor_CS_dump(processor)) return NULL_POINTER;
-    }
-    if (mode != WITHOUT_STACK)
-    {
+
         STACK_DUMP(&(processor->stack));
+        STACK_DUMP(&(processor->retStack));
+        break;
+
+    case STACK_ONLY:
+        STACK_DUMP(&(processor->stack));
+        break;
+
+    case RET_STACK_ONLY:
+        STACK_DUMP(&(processor->retStack));
+        break;
+
+    case CS_ONLY:
+        if (processor_CS_dump(processor)) return NULL_POINTER;
+        break;
+    
+    case REGISTERS_ONLY:
+        if (write_register_values(processor)) return NULL_POINTER;
+        break;
+
+    default:
+        break;
     }
+
     return NO_PROCESSOR_ERRORS;
 }
 
 processorErrorCode write_register_values(softProcessorUnit* processor)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
 
     color_printf(COLOR_RED, STYLE_BOLD, "REGISTERS:\n");
 
@@ -120,10 +136,7 @@ processorErrorCode write_register_values(softProcessorUnit* processor)
 
 processorErrorCode processor_CS_dump(softProcessorUnit* processor)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
 
     if (!(processor->CS))
     {
@@ -154,10 +167,7 @@ processorErrorCode processor_CS_dump(softProcessorUnit* processor)
 
 processorErrorCode write_CS_bird(softProcessorUnit* processor)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
 
     for (size_t i = 0; i < processor->IP; i++)
     {
@@ -176,10 +186,7 @@ processorErrorCode write_CS_bird(softProcessorUnit* processor)
 
 processorErrorCode dump_CS_info(const softProcessorUnit* processor, size_t bufferLen)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
 
     for (size_t i = 0; i < bufferLen; i++)
     {
@@ -198,17 +205,17 @@ processorErrorCode dump_CS_info(const softProcessorUnit* processor, size_t buffe
         } 
         else if (processor->CS[i] == (PUSH | IMM))
         {
-            colorCounter = 8;
+            colorCounter = sizeof(double);
         }
         else if (processor->CS[i] == JMP || processor->CS[i] == JA  || processor->CS[i] == JAE
             ||   processor->CS[i] == JB  || processor->CS[i] == JBE || processor->CS[i] == JE
             ||   processor->CS[i] == JNE)
         {
-            colorCounter = 4;
+            colorCounter = sizeof(int);
         }
         else if (processor->CS[i] == (PUSH | REG) || processor->CS[i] == (POP | REG))
         {
-            colorCounter = 1;
+            colorCounter = sizeof(char);
         }
         
         color_printf(COLOR_CYAN, STYLE_BOLD,"%4d", processor->CS[i]);
@@ -220,20 +227,14 @@ processorErrorCode dump_CS_info(const softProcessorUnit* processor, size_t buffe
 
 processorErrorCode count_len_of_buffer(const softProcessorUnit* processor, size_t* bufferLen)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
-    if (!bufferLen)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
+    assert(bufferLen);
 
     for (size_t i = 0; i < processor->commandCount; i++)
     {
         if ((int) processor->CS[*bufferLen] == (PUSH | IMM))
         {
-            (*bufferLen) += 9;
+            (*bufferLen) += (sizeof(char) + sizeof(double));
         }
 
         else if ((int) processor->CS[*bufferLen] == JMP || (int) processor->CS[*bufferLen] == JA
@@ -241,17 +242,17 @@ processorErrorCode count_len_of_buffer(const softProcessorUnit* processor, size_
             ||   (int) processor->CS[*bufferLen] == JBE || (int) processor->CS[*bufferLen] == JE
             ||   (int) processor->CS[*bufferLen] == JNE)
         {
-            (*bufferLen) += 5;
+            (*bufferLen) += (sizeof(char) + sizeof(int));
         }
 
         else if ((int) processor->CS[*bufferLen] == (PUSH | REG) || (int) processor->CS[*bufferLen] == (POP | REG))
         {
-            (*bufferLen) += 2;
+            (*bufferLen) += (2 * sizeof(char));
         }
 
         else
         {
-            (*bufferLen)++;
+            (*bufferLen) += sizeof(char);
         }
     }
 
@@ -260,14 +261,8 @@ processorErrorCode count_len_of_buffer(const softProcessorUnit* processor, size_
 
 processorErrorCode copy_data_from_buffer(const char* buffer, void* ptr, size_t len)
 {
-    if (!buffer)
-    {
-        return NULL_POINTER;
-    }
-    if (!ptr)
-    {
-        return NULL_POINTER;
-    }
+    assert(buffer);
+    assert(ptr);
 
     for (size_t i = 0; i < len; i++)
     {

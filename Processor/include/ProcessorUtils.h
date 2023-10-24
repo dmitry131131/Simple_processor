@@ -8,7 +8,9 @@
 enum dumpMode{
     FULL,
     STACK_ONLY,
-    WITHOUT_STACK
+    RET_STACK_ONLY,
+    CS_ONLY,
+    REGISTERS_ONLY
 };  
 
 processorErrorCode processor_ctor(softProcessorUnit* processor);

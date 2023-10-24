@@ -12,6 +12,7 @@ const int COMMAND_PART = 0b11111;
 
 struct softProcessorUnit {
     Stack stack;
+    Stack retStack;
     int rax, rbx, rcx, rdx;
     size_t IP;
     char* CS;
