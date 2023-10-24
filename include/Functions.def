@@ -113,6 +113,15 @@ JUMP_ASSEMBLER(JNE),
     err = processor_jne(processor, newIp);
 })
 
+DEF_CMD("call", CALL, 1,
+JUMP_ASSEMBLER(CALL),
+{
+    JUMP_PROCESSOR
+
+    err = processor_call(processor, newIp);
+}
+)
+
 #undef JUMP_ASSEMBLER
 
 DEF_CMD("push", PUSH, 1, 
@@ -375,6 +384,13 @@ DEF_CMD("in", IN, 0,
     },
     err = processor_in(&(processor->stack));
     processor->IP++;
+    )
+
+DEF_CMD("ret", RET, 0,
+    {
+        WRITE_SINGLE_COMMAND(RET);
+    },
+    err = processor_ret(processor);
     )
 
 DEF_CMD("hlt", HLT, 0, 

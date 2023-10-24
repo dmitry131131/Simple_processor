@@ -209,7 +209,7 @@ processorErrorCode dump_CS_info(const softProcessorUnit* processor, size_t buffe
         }
         else if (processor->CS[i] == JMP || processor->CS[i] == JA  || processor->CS[i] == JAE
             ||   processor->CS[i] == JB  || processor->CS[i] == JBE || processor->CS[i] == JE
-            ||   processor->CS[i] == JNE)
+            ||   processor->CS[i] == JNE || processor->CS[i] == CALL)
         {
             colorCounter = sizeof(int);
         }
@@ -240,7 +240,7 @@ processorErrorCode count_len_of_buffer(const softProcessorUnit* processor, size_
         else if ((int) processor->CS[*bufferLen] == JMP || (int) processor->CS[*bufferLen] == JA
             ||   (int) processor->CS[*bufferLen] == JAE || (int) processor->CS[*bufferLen] == JB
             ||   (int) processor->CS[*bufferLen] == JBE || (int) processor->CS[*bufferLen] == JE
-            ||   (int) processor->CS[*bufferLen] == JNE)
+            ||   (int) processor->CS[*bufferLen] == JNE || (int) processor->CS[*bufferLen] == CALL)
         {
             (*bufferLen) += (sizeof(char) + sizeof(int));
         }

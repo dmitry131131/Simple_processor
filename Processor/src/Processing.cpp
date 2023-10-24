@@ -407,6 +407,41 @@ enum processorErrorCode processor_in(Stack* stack)
     return NO_PROCESSOR_ERRORS;
 }
 
+processorErrorCode processor_call(softProcessorUnit* processor, int ip)
+{
+    assert(processor);
+
+    if (ip < 0)
+    {
+        return BAD_IP;
+    }
+
+    if (STACK_PUSH(&(processor->retStack), (elem_t) (processor->IP + sizeof(int))))
+    {
+        return PUSH_ERROR;
+    }
+
+    processor_jmp(processor, ip);
+
+    return NO_PROCESSOR_ERRORS;
+}
+
+processorErrorCode processor_ret(softProcessorUnit* processor)
+{
+    assert(processor);
+
+    int newIp = STACK_POP(&(processor->retStack));
+
+    if (newIp == ELEM_T_POISON)
+    {
+        return POP_ERROR;
+    }
+
+    processor->IP = (size_t) newIp;
+
+    return NO_PROCESSOR_ERRORS;
+}
+
 enum processorErrorCode processor_hlt(Stack* stack)
 {
     assert(stack);

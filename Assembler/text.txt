@@ -3,10 +3,10 @@ in
 pop rax
 push rax
 add
-push 2
-push 2
-ja hff
+call hff
 hlt
+
+
 :hff
-out
-hlt
+    out
+    ret

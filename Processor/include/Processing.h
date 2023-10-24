@@ -62,6 +62,10 @@ processorErrorCode processor_je(softProcessorUnit* processor, int ip);
 
 processorErrorCode processor_jne(softProcessorUnit* processor, int ip);
 
+processorErrorCode processor_call(softProcessorUnit* processor, int ip);
+
+processorErrorCode processor_ret(softProcessorUnit* processor);
+
 enum processorErrorCode processor_hlt(Stack* stack);
 
 #endif

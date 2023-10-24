@@ -27,7 +27,9 @@ enum commandCodes {
     JB          = 17,
     JBE         = 18,
     JE          = 19,
-    JNE         = 20
+    JNE         = 20,
+    CALL        = 21,
+    RET         = 22
 };
 
 enum argumentsAddons {
