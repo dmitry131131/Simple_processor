@@ -89,16 +89,16 @@ processorErrorCode processor_dump(softProcessorUnit* processor, dumpMode mode)
         if (write_register_values(processor)) return NULL_POINTER;
         if (processor_CS_dump(processor)) return NULL_POINTER;
 
-        STACK_DUMP(&(processor->stack));
-        STACK_DUMP(&(processor->retStack));
+        STACK_DUMP(&(processor->stack), SHORT);
+        STACK_DUMP(&(processor->retStack), SHORT);
         break;
 
     case STACK_ONLY:
-        STACK_DUMP(&(processor->stack));
+        STACK_DUMP(&(processor->stack), SHORT);
         break;
 
     case RET_STACK_ONLY:
-        STACK_DUMP(&(processor->retStack));
+        STACK_DUMP(&(processor->retStack), SHORT);
         break;
 
     case CS_ONLY:

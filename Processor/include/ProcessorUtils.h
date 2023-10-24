@@ -6,7 +6,7 @@
 #define MATH_UTILS_H
 
 enum dumpMode{
-    FULL,
+    FULL_DUMP,
     STACK_ONLY,
     RET_STACK_ONLY,
     CS_ONLY,
