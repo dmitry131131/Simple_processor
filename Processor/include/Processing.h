@@ -23,29 +23,29 @@ struct softProcessorUnit {
  * @param [in] text Pointer to programm text
  * @return Error code or NO_ERRORS if everything is ok
 */
-enum processorErrorCode processing(softProcessorUnit* processor);
+processorErrorCode processing(softProcessorUnit* processor);
 
 processorErrorCode processor_push_from_register(softProcessorUnit* processor, registerNames reg);
 
 processorErrorCode processor_pop(softProcessorUnit* processor, registerNames reg);
 
-enum processorErrorCode processor_push(double num, Stack* stack);
+processorErrorCode processor_push(double num, Stack* stack);
 
-enum processorErrorCode processor_out(Stack* stack, FILE* stream);
+processorErrorCode processor_out(Stack* stack, FILE* stream);
 
-enum processorErrorCode processor_add(Stack* stack);
+processorErrorCode processor_add(Stack* stack);
 
-enum processorErrorCode processor_sub(Stack* stack);
+processorErrorCode processor_sub(Stack* stack);
 
-enum processorErrorCode processor_mul(Stack* stack);
+processorErrorCode processor_mul(Stack* stack);
 
-enum processorErrorCode processor_div(Stack* stack);
+processorErrorCode processor_div(Stack* stack);
 
-enum processorErrorCode processor_sqrt(Stack* stack);
+processorErrorCode processor_sqrt(Stack* stack);
 
-enum processorErrorCode processor_trig(Stack* stack, commandCodes mode);
+processorErrorCode processor_trig(Stack* stack, commandCodes mode);
 
-enum processorErrorCode processor_in(Stack* stack);
+processorErrorCode processor_in(Stack* stack);
 
 processorErrorCode processor_jmp(softProcessorUnit* processor, int ip);
 

@@ -85,7 +85,7 @@ enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
 
         if (command[0] == ':')
         {
-            add_tag_to_buffer((command + 1), binBuffer.bufferPointer, tagBuffer);
+            add_tag_to_buffer((command + 1), (int) binBuffer.bufferPointer, tagBuffer);
         }
 
         #include "Functions.def"

@@ -23,7 +23,7 @@ struct TagBuffer {
     Tag*   bufferName;
 };
 
-enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer);
+asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer);
 
 asmErrorCode tag_buffer_ctor(TagBuffer* tag);
 
