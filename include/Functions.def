@@ -124,7 +124,8 @@ DEF_CMD("push", PUSH, 1,
         {
             cmd |= (PUSH | IMM);
 
-            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "17 %lf\n", commandArg);
+            textBuffer.bufferPointer += (size_t)
+            sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d %lf\n", cmd, commandArg);
 
             if ((error = write_char_to_buffer(&binBuffer, cmd)))
             {
@@ -143,7 +144,7 @@ DEF_CMD("push", PUSH, 1,
 
             registerNames reg = NO_REG;
 
-            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "33 ");
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d ", cmd);
 
             if ((error = write_char_to_buffer(&binBuffer, cmd)))
             {
@@ -238,7 +239,7 @@ DEF_CMD("pop", POP, 1,
 
         registerNames reg = NO_REG;
 
-        textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "45 ");
+        textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d ", cmd);
 
         if ((error = write_char_to_buffer(&binBuffer, cmd)))
         {
