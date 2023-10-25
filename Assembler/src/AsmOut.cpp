@@ -85,7 +85,7 @@ asmErrorCode write_header_info(FILE* outputTextFile, FILE* outputBinFile, int ve
     fprintf(outputTextFile, "AD\n");
     fprintf(outputTextFile, "Version %d\n", version);
     fprintf(outputTextFile, "%lu commands\n\n", commandCount);
-    fprintf(outputTextFile, "command   code      argument\n\n");
+    fprintf(outputTextFile, "command   code      argument  source\n\n");
 
     if (write_char_to_bin_file(outputBinFile, 'A'))
     {
@@ -98,11 +98,11 @@ asmErrorCode write_header_info(FILE* outputTextFile, FILE* outputBinFile, int ve
     return NO_ASSEMBLER_ERRORS;
 }
 
-asmErrorCode write_char_to_buffer(outputBuffer* buffer, char num)
+asmErrorCode write_char_to_buffer(outputBuffer* buffer, unsigned char num)
 {
     assert(buffer);
 
-    (buffer->Buffer)[buffer->bufferPointer] = num;
+    (buffer->Buffer)[buffer->bufferPointer] = (char) num;
     (buffer->bufferPointer)++;
 
     return NO_ASSEMBLER_ERRORS;

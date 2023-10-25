@@ -24,15 +24,17 @@ processorErrorCode processor_ctor(softProcessorUnit* processor)
 {
     assert(processor);
 
-    processor->stack = {};
-    processor->retStack = {};
-    processor->IP = 0;
+    processor->stack                = {};
+    processor->retStack             = {};
+    processor->IP                   = 0;
     processor->rax = processor->rbx = processor->rcx = processor->rdx = 0;
-    processor->commandCount = 0;
-    processor->CS = NULL;
+    processor->commandCount         = 0;
+    processor->CS                   = NULL;
 
-    STACK_CTOR(&(processor->stack), 10);
-    STACK_CTOR(&(processor->retStack), 10);
+    processor->RAM                  = (int*) calloc(RAM_SIZE, sizeof(int));
+
+    STACK_CTOR(&(processor->stack),    STACK_SIZE);
+    STACK_CTOR(&(processor->retStack), RET_STACK_SIZE);
 
     if (processor->stack.stackErrors || processor->retStack.stackErrors)
     {
@@ -64,6 +66,7 @@ processorErrorCode processor_dtor(softProcessorUnit* processor)
     processor->commandCount = 0;
 
     free(processor->CS);
+    free(processor->RAM);
 
     STACK_DTOR(&(processor->stack));
     STACK_DTOR(&(processor->retStack));

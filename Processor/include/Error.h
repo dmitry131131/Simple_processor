@@ -30,7 +30,8 @@ enum processorErrorCode {
     CALLOC_ERROR,
     READ_PROGRAMM_BODY_ERROR,
     BAD_FILENAME,
-    BAD_IP
+    BAD_IP,
+    BAD_ADRESS
 };
 
 void print_processor_error_message(FILE* stream, processorErrorCode error);

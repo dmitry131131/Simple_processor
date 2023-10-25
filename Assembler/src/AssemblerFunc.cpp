@@ -72,7 +72,7 @@ asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer, const
     {
         char command[MAX_COMMAND_LEN]       = {};
         double commandArg                   = 0;
-        char registerName[MAX_REGISTER_LEN] = {};
+        char textArgName[MAX_REGISTER_LEN]  = {};
 
         if (!check_line_availability(text->linesPtr[i])) continue;
 

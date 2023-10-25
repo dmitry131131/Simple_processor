@@ -35,7 +35,7 @@ asmErrorCode create_command_buffer(char** buffer, size_t size);
 
 asmErrorCode write_double_to_buffer(outputBuffer* buffer, double num);
 
-asmErrorCode write_char_to_buffer(outputBuffer* buffer, char num);
+asmErrorCode write_char_to_buffer(outputBuffer* buffer, unsigned char num);
 
 asmErrorCode write_int_to_buffer(outputBuffer* buffer, int num);
 

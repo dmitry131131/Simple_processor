@@ -7,7 +7,7 @@
 
 const int TAG_BUFFER_SIZE  = 100;
 const int MAX_COMMAND_LEN  = 150;
-const int MAX_REGISTER_LEN = 10;
+const int MAX_REGISTER_LEN = 50;
 
 const int VERSION = 2;
 

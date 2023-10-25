@@ -67,31 +67,32 @@ int main(const int argc, const char* argv[])
         break;
 
     case 4:
-        if (strcmp("-o", argv[2])) 
         {
-            print_assembler_error_message(WRONG_CONSOLE_ARGS, stderr);
-            DESTRUCT_BUFFER_AND_RETURN;
-        }
+            if (strcmp("-o", argv[2])) 
+            {
+                print_assembler_error_message(WRONG_CONSOLE_ARGS, stderr);
+                DESTRUCT_BUFFER_AND_RETURN;
+            }
 
-        text = asm_prepare(argv[1], &error);
-        if (error)
-        {
-            print_assembler_error_message(error, stderr);
-            DESTRUCT_BUFFER_AND_RETURN;
-        }
+            text = asm_prepare(argv[1], &error);
+            if (error)
+            {
+                print_assembler_error_message(error, stderr);
+                DESTRUCT_BUFFER_AND_RETURN;
+            }
 
-        if ((error = main_assembler_function(text, &tagBuffer, argv[3])))
-        {
-            print_assembler_error_message(error, stderr);
-            DESTRUCT_BUFFER_AND_RETURN;
-        }
+            if ((error = main_assembler_function(text, &tagBuffer, argv[3])))
+            {
+                print_assembler_error_message(error, stderr);
+                DESTRUCT_BUFFER_AND_RETURN;
+            }
 
-        if ((error = main_assembler_function(text, &tagBuffer, argv[3])))
-        {
-            print_assembler_error_message(error, stderr);
-            DESTRUCT_BUFFER_AND_RETURN;
+            if ((error = main_assembler_function(text, &tagBuffer, argv[3])))
+            {
+                print_assembler_error_message(error, stderr);
+                DESTRUCT_BUFFER_AND_RETURN;
+            }
         }
-
         break;
     
     default:

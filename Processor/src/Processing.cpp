@@ -140,12 +140,16 @@ processorErrorCode processor_jne(softProcessorUnit* processor, int ip)
 
 #undef JUMP_PATTERN
 
-processorErrorCode processor_pop(softProcessorUnit* processor, registerNames reg)
+processorErrorCode processor_pop_to_register(softProcessorUnit* processor, registerNames reg)
 {
     assert(processor);
 
     int data = STACK_POP(&(processor->stack));
-    
+    if (!data)
+    {
+        return POP_ERROR;
+    }
+
     switch (reg)
     {
     case RAX:
@@ -171,6 +175,30 @@ processorErrorCode processor_pop(softProcessorUnit* processor, registerNames reg
         return WRONG_COMMAND;
         break;
     }
+
+    return NO_PROCESSOR_ERRORS;
+}
+
+processorErrorCode processor_pop_to_RAM(softProcessorUnit* processor, int adress)
+{
+    assert(processor);
+
+    int data = STACK_POP(&(processor->stack));
+    if (!data)
+    {
+        return POP_ERROR;
+    }
+
+    if (adress < 0) return BAD_ADRESS;
+
+    processor->RAM[adress] = data;
+
+    return NO_PROCESSOR_ERRORS;
+}
+
+processorErrorCode processor_push_from_RAM(softProcessorUnit* processor, int adress)
+{
+    assert(processor);
 
     return NO_PROCESSOR_ERRORS;
 }

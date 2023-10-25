@@ -1,0 +1,15 @@
+AD
+Version 2
+9 commands
+
+command   code      argument  source
+
+push      33        3.000000  push 3
+in        11                  in
+pop       77        1         pop rax
+push      225       3.000000  push [rax+3]
+add       2                   add
+call      21        25        call hff
+hlt       12                  hlt
+out       6                       out
+ret       22                      ret

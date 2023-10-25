@@ -48,7 +48,8 @@ void print_processor_error_message(FILE* stream, processorErrorCode error)
     CHECK_CODE(FILE_OPEN_ERROR,             "Can't open file!\n");
     CHECK_CODE(BAD_FILENAME,                "Bad bytecode file!\n");
     CHECK_CODE(BAD_IP,                      "Bad instruction pointer(IP) given!\n");
-        
+    CHECK_CODE(BAD_ADRESS,                  "Bad adress in RAM given!\n");
+
     default:
         fprintf(stream, "Unknown error!\n");
         break;
