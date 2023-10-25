@@ -84,7 +84,8 @@ asmErrorCode write_header_info(FILE* outputTextFile, FILE* outputBinFile, int ve
     
     fprintf(outputTextFile, "AD\n");
     fprintf(outputTextFile, "Version %d\n", version);
-    fprintf(outputTextFile, "%lu commands\n", commandCount);
+    fprintf(outputTextFile, "%lu commands\n\n", commandCount);
+    fprintf(outputTextFile, "command   code      argument\n\n");
 
     if (write_char_to_bin_file(outputBinFile, 'A'))
     {

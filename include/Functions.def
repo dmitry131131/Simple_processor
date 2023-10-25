@@ -1,13 +1,30 @@
-#define WRITE_SINGLE_COMMAND(num) do{                                                                                   \
+#define WRITE_COMMAND_TO_LISTING(command, code, arg)do{                                                                 \
+    textBuffer.bufferPointer += (size_t)                                                                                \
+    sprintf((textBuffer.Buffer + textBuffer.bufferPointer),                                                             \
+    "%" LISTING_COMMAND_FORMAT "s""%" LISTING_COMMAND_FORMAT "d" "%d\n", (command), (code), (arg));                     \
+}while(0)
+
+#define WRITE_SINGLE_COMMAND_TO_LISTING(command, code)do{                                                               \
+    textBuffer.bufferPointer += (size_t)                                                                                \
+    sprintf((textBuffer.Buffer + textBuffer.bufferPointer),                                                             \
+    "%" LISTING_COMMAND_FORMAT "s""%" LISTING_COMMAND_FORMAT "d\n", (command), (code));                                 \
+}while(0)
+
+#define WRITE_DOUBLE_COMMAND_TO_LISTING(command, code, arg)do{                                                          \
+    textBuffer.bufferPointer += (size_t)                                                                                \
+    sprintf((textBuffer.Buffer + textBuffer.bufferPointer),                                                             \
+    "%" LISTING_COMMAND_FORMAT "s""%" LISTING_COMMAND_FORMAT "d" "%lf\n", (command), (code), (arg));                    \
+}while(0)
+
+#define WRITE_SINGLE_COMMAND(command, num) do{                                                                          \
     commandCount++;                                                                                                     \
-    textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d\n", (num));        \
+    WRITE_SINGLE_COMMAND_TO_LISTING(command, num);                                                                      \
     write_char_to_buffer(&binBuffer, num);                                                                              \
                                                                                                                         \
 }while(0)
 
-#define JUMP_ASSEMBLER(jmp_type) {                                                                                      \
+#define JUMP_ASSEMBLER(jmp_name, jmp_type) {                                                                            \
     commandCount++;                                                                                                     \
-    textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d ", jmp_type);      \
                                                                                                                         \
     if ((error = write_char_to_buffer(&binBuffer, jmp_type)))                                                           \
     {                                                                                                                   \
@@ -17,7 +34,7 @@
     int tagIp = -1;                                                                                                     \
     if (sscanf(text->linesPtr[i], "%s %d", command, &tagIp) == 2)                                                       \
     {                                                                                                                   \
-        textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d\n", tagIp);    \
+        WRITE_COMMAND_TO_LISTING(jmp_name, jmp_type, tagIp);                                                            \
                                                                                                                         \
         if ((error = write_int_to_buffer(&binBuffer, tagIp)))                                                           \
         {                                                                                                               \
@@ -38,26 +55,26 @@
     tagIp = -1;                                                                                                         \
     get_tag_ip(tagBuffer, tagName, &tagIp);                                                                             \
                                                                                                                         \
-    textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d\n", tagIp);        \
+    WRITE_COMMAND_TO_LISTING(jmp_name, jmp_type, tagIp);                                                                \
                                                                                                                         \
     if ((error = write_int_to_buffer(&binBuffer, tagIp)))                                                               \
     {                                                                                                                   \
         break;                                                                                                          \
     }                                                                                                                   \
-}       
+}
 
-#define JUMP_PROCESSOR                                                                  \
-    processor->IP++;                                                                    \
-                                                                                        \
-    int newIp = -1;                                                                     \
-    if (copy_data_from_buffer(processor->CS + processor->IP, &newIp, sizeof(int)))      \
-    {                                                                                   \
-        RETURN(COPU_ARG_ERROR);                                                         \
-    }                                                                                   
+#define JUMP_PROCESSOR                                                                                                  \
+    processor->IP++;                                                                                                    \
+                                                                                                                        \
+    int newIp = -1;                                                                                                     \
+    if (copy_data_from_buffer(processor->CS + processor->IP, &newIp, sizeof(int)))                                      \
+    {                                                                                                                   \
+        RETURN(COPU_ARG_ERROR);                                                                                         \
+    }
 
 
 DEF_CMD("jmp", JMP, 1, 
-    JUMP_ASSEMBLER(JMP), 
+    JUMP_ASSEMBLER("jmp", JMP), 
     {
         JUMP_PROCESSOR
 
@@ -66,7 +83,7 @@ DEF_CMD("jmp", JMP, 1,
     )
 
 DEF_CMD("ja", JA, 1,
-JUMP_ASSEMBLER(JA),
+JUMP_ASSEMBLER("ja", JA),
 {
     JUMP_PROCESSOR
 
@@ -74,7 +91,7 @@ JUMP_ASSEMBLER(JA),
 })
 
 DEF_CMD("jae", JAE, 1,
-JUMP_ASSEMBLER(JAE),
+JUMP_ASSEMBLER("jae", JAE),
 {
     JUMP_PROCESSOR
 
@@ -82,7 +99,7 @@ JUMP_ASSEMBLER(JAE),
 })
 
 DEF_CMD("jb", JB, 1,
-JUMP_ASSEMBLER(JB),
+JUMP_ASSEMBLER("jb", JB),
 {
     JUMP_PROCESSOR
 
@@ -90,7 +107,7 @@ JUMP_ASSEMBLER(JB),
 })
 
 DEF_CMD("jbe", JBE, 1,
-JUMP_ASSEMBLER(JBE),
+JUMP_ASSEMBLER("jbe", JBE),
 {
     JUMP_PROCESSOR
 
@@ -98,7 +115,7 @@ JUMP_ASSEMBLER(JBE),
 })
 
 DEF_CMD("je", JE, 1,
-JUMP_ASSEMBLER(JE),
+JUMP_ASSEMBLER("je", JE),
 {
     JUMP_PROCESSOR
 
@@ -106,7 +123,7 @@ JUMP_ASSEMBLER(JE),
 })
 
 DEF_CMD("jne", JNE, 1,
-JUMP_ASSEMBLER(JNE),
+JUMP_ASSEMBLER("jne", JNE),
 {
     JUMP_PROCESSOR
 
@@ -114,7 +131,7 @@ JUMP_ASSEMBLER(JNE),
 })
 
 DEF_CMD("call", CALL, 1,
-JUMP_ASSEMBLER(CALL),
+JUMP_ASSEMBLER("call", CALL),
 {
     JUMP_PROCESSOR
 
@@ -133,8 +150,7 @@ DEF_CMD("push", PUSH, 1,
         {
             cmd |= (PUSH | IMM);
 
-            textBuffer.bufferPointer += (size_t)
-            sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d %lf\n", cmd, commandArg);
+            WRITE_DOUBLE_COMMAND_TO_LISTING("push", cmd, commandArg);
 
             if ((error = write_char_to_buffer(&binBuffer, cmd)))
             {
@@ -152,8 +168,6 @@ DEF_CMD("push", PUSH, 1,
             cmd |= (PUSH | REG);
 
             registerNames reg = NO_REG;
-
-            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d ", cmd);
 
             if ((error = write_char_to_buffer(&binBuffer, cmd)))
             {
@@ -192,7 +206,7 @@ DEF_CMD("push", PUSH, 1,
 
             if (error) break;
 
-            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d\n", reg);
+            WRITE_COMMAND_TO_LISTING("push", cmd, reg);
 
             if ((error = write_char_to_buffer(&binBuffer, reg)))
             {
@@ -248,8 +262,6 @@ DEF_CMD("pop", POP, 1,
 
         registerNames reg = NO_REG;
 
-        textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d ", cmd);
-
         if ((error = write_char_to_buffer(&binBuffer, cmd)))
         {
             break;
@@ -287,7 +299,7 @@ DEF_CMD("pop", POP, 1,
 
         if (error) break;
 
-        textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%d\n", reg);
+        WRITE_COMMAND_TO_LISTING("pop", cmd, reg);
 
         if ((error = write_char_to_buffer(&binBuffer, reg)))
         {
@@ -308,7 +320,7 @@ DEF_CMD("pop", POP, 1,
 
 DEF_CMD("add", ADD, 0, 
     {
-        WRITE_SINGLE_COMMAND(ADD);
+        WRITE_SINGLE_COMMAND("add", ADD);
     },
     err = processor_add(&(processor->stack));
     processor->IP++;
@@ -316,7 +328,7 @@ DEF_CMD("add", ADD, 0,
 
 DEF_CMD("sub", SUB, 0, 
     {
-        WRITE_SINGLE_COMMAND(SUB);
+        WRITE_SINGLE_COMMAND("sub", SUB);
     },
     err = processor_sub(&(processor->stack));
     processor->IP++;
@@ -324,7 +336,7 @@ DEF_CMD("sub", SUB, 0,
 
 DEF_CMD("mul", MUL, 0, 
     {
-        WRITE_SINGLE_COMMAND(MUL);
+        WRITE_SINGLE_COMMAND("mul", MUL);
     },
     err = processor_mul(&(processor->stack));
     processor->IP++;
@@ -332,7 +344,7 @@ DEF_CMD("mul", MUL, 0,
 
 DEF_CMD("div", DIV, 0, 
     {
-        WRITE_SINGLE_COMMAND(DIV);
+        WRITE_SINGLE_COMMAND("div", DIV);
     },
     err = processor_div(&(processor->stack));
     processor->IP++;
@@ -340,7 +352,7 @@ DEF_CMD("div", DIV, 0,
 
 DEF_CMD("out", OUT, 0, 
     {
-        WRITE_SINGLE_COMMAND(OUT);
+        WRITE_SINGLE_COMMAND("out", OUT);
     },
     err = processor_out(&(processor->stack), stdout);
     processor->IP++;
@@ -348,7 +360,7 @@ DEF_CMD("out", OUT, 0,
 
 DEF_CMD("sqrt", SQRT, 0, 
     {
-        WRITE_SINGLE_COMMAND(SQRT);
+        WRITE_SINGLE_COMMAND("sqrt", SQRT);
     },
     err = processor_sqrt(&(processor->stack));
     processor->IP++;
@@ -356,7 +368,7 @@ DEF_CMD("sqrt", SQRT, 0,
 
 DEF_CMD("sin", SIN, 0, 
     {
-        WRITE_SINGLE_COMMAND(SIN);
+        WRITE_SINGLE_COMMAND("sin", SIN);
     },
     err = processor_trig(&(processor->stack), command);
     processor->IP++;
@@ -364,7 +376,7 @@ DEF_CMD("sin", SIN, 0,
 
 DEF_CMD("cos", COS, 0, 
     {
-        WRITE_SINGLE_COMMAND(COS);
+        WRITE_SINGLE_COMMAND("cos", COS);
     },
     err = processor_trig(&(processor->stack), command);
     processor->IP++;
@@ -372,7 +384,7 @@ DEF_CMD("cos", COS, 0,
 
 DEF_CMD("tan", TAN, 0, 
     {
-        WRITE_SINGLE_COMMAND(TAN);
+        WRITE_SINGLE_COMMAND("tan", TAN);
     },
     err = processor_trig(&(processor->stack), command);
     processor->IP++;
@@ -380,7 +392,7 @@ DEF_CMD("tan", TAN, 0,
 
 DEF_CMD("in", IN, 0, 
     {
-        WRITE_SINGLE_COMMAND(IN);
+        WRITE_SINGLE_COMMAND("in", IN);
     },
     err = processor_in(&(processor->stack));
     processor->IP++;
@@ -388,14 +400,14 @@ DEF_CMD("in", IN, 0,
 
 DEF_CMD("ret", RET, 0,
     {
-        WRITE_SINGLE_COMMAND(RET);
+        WRITE_SINGLE_COMMAND("ret", RET);
     },
     err = processor_ret(processor);
     )
 
 DEF_CMD("hlt", HLT, 0, 
     {
-        WRITE_SINGLE_COMMAND(HLT);
+        WRITE_SINGLE_COMMAND("hlt", HLT);
     },
     err = processor_hlt(&(processor->stack));
     processor->IP++;

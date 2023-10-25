@@ -11,6 +11,8 @@ const int MAX_REGISTER_LEN = 10;
 
 const int VERSION = 2;
 
+#define LISTING_COMMAND_FORMAT "-10"
+
 #include "DSL.h"
 
 struct Tag {

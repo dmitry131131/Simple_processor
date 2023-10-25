@@ -1,12 +1,15 @@
 AD
 Version 2
 9 commands
-33 3.000000
-11
-77 1
-65 1
-2
-21 21
-12
-6
-22
+
+command   code      argument
+
+push      33        3.000000
+in        11        
+pop       77        1
+push      65        1
+add       2         
+call      21        21
+hlt       12        
+out       6         
+ret       22        

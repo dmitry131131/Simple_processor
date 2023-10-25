@@ -46,7 +46,7 @@ enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
         return error;
     }
 
-    if ((error = buffer_ctor(&textBuffer, text->bufferSize * 2)))
+    if ((error = buffer_ctor(&textBuffer, text->bufferSize * 8)))
     {
         assert(!error);
         return error;
