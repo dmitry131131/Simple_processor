@@ -16,6 +16,7 @@ enum asmErrorCode {
     INVALID_SYNTAX,
     WRONG_REGISTER_NAME,
     FEW_CONSOLE_ARGS,
+    WRONG_CONSOLE_ARGS,
     TAG_NOT_FOUND
 };
 

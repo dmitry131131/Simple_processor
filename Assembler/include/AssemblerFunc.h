@@ -25,7 +25,7 @@ struct TagBuffer {
     Tag*   bufferName;
 };
 
-asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer);
+asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer, const char* filename);
 
 asmErrorCode tag_buffer_ctor(TagBuffer* tag);
 

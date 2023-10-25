@@ -15,7 +15,7 @@
 
 static bool check_line_availability(const char* string);
 
-enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
+asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer, const char* filename)
 {
     #define DEF_CMD(name, num, args, asm_code, proc_code)       \
         else if (!strcmp(command, name))                        \
@@ -53,14 +53,14 @@ enum asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer)
     }
 
     FILE* outputBinFile = NULL;
-    if ((error = create_output_file(&outputBinFile, "outbin", BIN)))
+    if ((error = create_output_file(&outputBinFile, filename, BIN)))
     {
         assert(!error);
         return error;
     }
 
     FILE* outputTextFile = NULL;
-    if ((error = create_output_file(&outputTextFile, "out.txt", TEXT)))
+    if ((error = create_output_file(&outputTextFile, "listing", TEXT)))
     {
         assert(!error);
         return error;

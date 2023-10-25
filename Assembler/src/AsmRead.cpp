@@ -4,6 +4,8 @@
 */
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <ctype.h>
 
@@ -15,7 +17,7 @@
 static textData* text_to_lower(textData* text);
 static textData* remove_comments_from_text(textData* text);
 
-textData* asm_prepare(const char* filename)
+textData* asm_prepare(const char* filename, asmErrorCode* error)
 {
     assert(filename);
 
@@ -28,6 +30,7 @@ textData* asm_prepare(const char* filename)
     {
         print_filename(stderr, filename);
         print_error_message(stderr, err);
+        *error = WRONG_CONSOLE_ARGS;
     }
 
     text_to_lower(&text);
@@ -62,4 +65,20 @@ static textData* remove_comments_from_text(textData* text)
     }
 
     return text;
+}
+
+char* add_dot_bin_in_filename(const char* filename)
+{
+    assert(filename);
+
+    size_t len = strlen(filename);
+    char* newFilename = (char*) calloc(len + 5, sizeof(char));
+
+    if (!newFilename) return NULL;
+
+    strcpy(newFilename, filename);
+
+    strcat(newFilename, ".bin");
+
+    return newFilename;
 }
