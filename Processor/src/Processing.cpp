@@ -48,21 +48,16 @@ enum processorErrorCode processing(softProcessorUnit* processor)
             err = WRONG_COMMAND;
             break;
         }
+
+        if (err)
+        {
+            RETURN(err);
+        }
     }
 
-    if (err)
-    {
-        RETURN(err);
-    }
-
-    if (processor_dtor(processor))
-    {
-        RETURN(DTOR_ERROR);
-    }
+    RETURN(NO_PROCESSOR_ERRORS);
 
     #undef RETURN
-
-    return NO_PROCESSOR_ERRORS;
 }
 
 processorErrorCode processor_jmp(softProcessorUnit* processor, int ip)
@@ -150,6 +145,8 @@ processorErrorCode processor_pop_to_register(softProcessorUnit* processor, regis
         return POP_ERROR;
     }
 
+    data /= DOUBLE_COEF;
+
     switch (reg)
     {
     case RAX:
@@ -200,6 +197,16 @@ processorErrorCode processor_push_from_RAM(softProcessorUnit* processor, int adr
 {
     assert(processor);
 
+    if (adress < 0)
+    {
+        return BAD_ADRESS;
+    }
+
+    if (STACK_PUSH(&(processor->stack), processor->RAM[adress]))
+    {
+        return PUSH_ERROR;
+    }
+
     return NO_PROCESSOR_ERRORS;
 }
 
@@ -233,6 +240,8 @@ processorErrorCode processor_push_from_register(softProcessorUnit* processor, re
         return WRONG_COMMAND;
         break;
     }
+
+    data *= DOUBLE_COEF;
 
     if (STACK_PUSH(&(processor->stack), data))
     {

@@ -5,6 +5,8 @@
 #ifndef MATH_UTILS_H
 #define MATH_UTILS_H
 
+const size_t COUNT_OF_DUMP_COMMANDS = 10;
+
 enum dumpMode{
     FULL_DUMP,
     STACK_ONLY,
@@ -32,6 +34,8 @@ processorErrorCode dump_CS_info(const softProcessorUnit* processor, size_t buffe
 processorErrorCode write_CS_bird(softProcessorUnit* processor);
 
 processorErrorCode write_register_values(softProcessorUnit* processor);
+
+processorErrorCode calculate_RAM_adress(softProcessorUnit* processor, registerNames reg, int* adress);
 
 
 #endif

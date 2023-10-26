@@ -93,6 +93,7 @@ processorErrorCode processor_dump(softProcessorUnit* processor, dumpMode mode)
         if (processor_CS_dump(processor)) return NULL_POINTER;
 
         STACK_DUMP(&(processor->stack), SHORT);
+        color_fprintf(stdout, COLOR_GREEN, STYLE_BOLD, "RETURN ADRESS STACK---------------------->\n");
         STACK_DUMP(&(processor->retStack), SHORT);
         break;
 
@@ -172,13 +173,17 @@ processorErrorCode write_CS_bird(softProcessorUnit* processor)
 {
     assert(processor);
 
-    for (size_t i = 0; i < processor->IP; i++)
+    size_t start = 0;
+
+    (processor->IP > COUNT_OF_DUMP_COMMANDS) ? (start = processor->IP - COUNT_OF_DUMP_COMMANDS) : start = 0;
+
+    for (size_t i = 0; i < processor->IP - start; i++)
     {
         printf("    ");
     }
     color_printf(COLOR_PURPLE, STYLE_BOLD,"   ^\n");
 
-    for (size_t i = 0; i < processor->IP; i++)
+    for (size_t i = 0; i < processor->IP - start; i++)
     {
         printf("    ");
     }
@@ -191,14 +196,20 @@ processorErrorCode dump_CS_info(const softProcessorUnit* processor, size_t buffe
 {
     assert(processor);
 
-    for (size_t i = 0; i < bufferLen; i++)
+    size_t start = 0;
+    size_t end   = 0;
+
+    (processor->IP > COUNT_OF_DUMP_COMMANDS) ? (start = processor->IP - COUNT_OF_DUMP_COMMANDS) : start = 0;
+    (bufferLen - processor->IP > COUNT_OF_DUMP_COMMANDS) ? (end = processor->IP + COUNT_OF_DUMP_COMMANDS) : end = bufferLen; 
+
+    for (size_t i = start; i < end; i++)
     {
         color_printf(COLOR_YELLOW, STYLE_BLINKING,"%4lu", i);
     }
     putchar('\n');
 
     size_t colorCounter = 0;
-    for (size_t i = 0; i < bufferLen; i++)
+    for (size_t i = start; i < end; i++)
     {
         if (colorCounter)
         {
@@ -212,16 +223,23 @@ processorErrorCode dump_CS_info(const softProcessorUnit* processor, size_t buffe
         }
         else if (processor->CS[i] == JMP || processor->CS[i] == JA  || processor->CS[i] == JAE
             ||   processor->CS[i] == JB  || processor->CS[i] == JBE || processor->CS[i] == JE
-            ||   processor->CS[i] == JNE || processor->CS[i] == CALL)
+            ||   processor->CS[i] == JNE || processor->CS[i] == CALL
+            ||   ((unsigned int) processor->CS[i] & COMMAND_MASK) == (PUSH | RAM | IMM)
+            ||   ((unsigned int) processor->CS[i] & COMMAND_MASK) == (POP  | RAM | IMM))
         {
             colorCounter = sizeof(int);
+        }
+        else if (((unsigned int) processor->CS[i] & COMMAND_MASK) == (PUSH | RAM | IMM | REG)
+            ||   ((unsigned int) processor->CS[i] & COMMAND_MASK) == (POP  | RAM | IMM | REG))
+        {
+            colorCounter = sizeof(char) + sizeof(int);
         }
         else if (processor->CS[i] == (PUSH | REG) || processor->CS[i] == (POP | REG))
         {
             colorCounter = sizeof(char);
         }
         
-        color_printf(COLOR_CYAN, STYLE_BOLD,"%4d", processor->CS[i]);
+        color_printf(COLOR_CYAN, STYLE_BOLD,"%4u", (unsigned int) processor->CS[i] & COMMAND_MASK);
     }
     putchar('\n');
 
@@ -243,9 +261,17 @@ processorErrorCode count_len_of_buffer(const softProcessorUnit* processor, size_
         else if ((int) processor->CS[*bufferLen] == JMP || (int) processor->CS[*bufferLen] == JA
             ||   (int) processor->CS[*bufferLen] == JAE || (int) processor->CS[*bufferLen] == JB
             ||   (int) processor->CS[*bufferLen] == JBE || (int) processor->CS[*bufferLen] == JE
-            ||   (int) processor->CS[*bufferLen] == JNE || (int) processor->CS[*bufferLen] == CALL)
+            ||   (int) processor->CS[*bufferLen] == JNE || (int) processor->CS[*bufferLen] == CALL
+            ||   ((unsigned int) processor->CS[*bufferLen] & COMMAND_MASK) == (PUSH | RAM | IMM)
+            ||   ((unsigned int) processor->CS[*bufferLen] & COMMAND_MASK) == (POP  | RAM | IMM))
         {
             (*bufferLen) += (sizeof(char) + sizeof(int));
+        }
+
+        else if (((unsigned int) processor->CS[*bufferLen] & COMMAND_MASK) == (PUSH | RAM | IMM | REG)
+            ||   ((unsigned int) processor->CS[*bufferLen] & COMMAND_MASK) == (POP  | RAM | IMM | REG))
+        {
+            (*bufferLen) += (2*sizeof(char) + sizeof(int));
         }
 
         else if ((int) processor->CS[*bufferLen] == (PUSH | REG) || (int) processor->CS[*bufferLen] == (POP | REG))
@@ -270,6 +296,40 @@ processorErrorCode copy_data_from_buffer(const char* buffer, void* ptr, size_t l
     for (size_t i = 0; i < len; i++)
     {
         *((char*) ptr + i) = buffer[i];
+    }
+
+    return NO_PROCESSOR_ERRORS;
+}
+
+processorErrorCode calculate_RAM_adress(softProcessorUnit* processor, registerNames reg, int* adress)
+{
+    assert(processor);
+    assert(adress);
+
+    switch (reg)
+    {
+    case RAX:
+        *adress += processor->rax;
+        break;
+
+    case RBX:
+        *adress += processor->rbx;
+    break;
+
+    case RCX:
+        *adress += processor->rcx;
+    break;
+    
+    case RDX:
+        *adress += processor->rdx;
+    break;
+
+    case NO_REG:
+        return WRONG_COMMAND;
+        break;
+    default:
+        return WRONG_COMMAND;
+        break;
     }
 
     return NO_PROCESSOR_ERRORS;

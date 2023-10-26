@@ -296,14 +296,34 @@ DEF_CMD("push", PUSH, 1,
 
             processor->IP++;
         }
-        else if ((int) command == (PUSH | RAM | IMM))
+        else if (((unsigned int) command & COMMAND_MASK) == (PUSH | RAM | IMM))
         {
-            if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, sizeof(double)))
+            int adress = -1;
+            if (copy_data_from_buffer(processor->CS + processor->IP, &adress, sizeof(int)))
             {
                 RETURN(COPU_ARG_ERROR);
             }
 
-            err = processor_p
+            err = processor_push_from_RAM(processor, adress);
+
+            processor->IP += sizeof(int);
+        }
+        else if (((unsigned int) command & COMMAND_MASK) == (PUSH | RAM | REG | IMM))
+        {
+            int adress = -1;
+            reg = (registerNames) *(processor->CS + processor->IP);
+            processor->IP++;
+
+            if (copy_data_from_buffer(processor->CS + processor->IP, &adress, sizeof(int)))
+            {
+                RETURN(COPU_ARG_ERROR);
+            }
+
+            err = calculate_RAM_adress(processor, reg, &adress);
+
+            err = processor_push_from_RAM(processor, adress);
+
+            processor->IP += sizeof(int);
         }
     }
     )
@@ -356,29 +376,54 @@ DEF_CMD("pop", POP, 1,
 
         if ((cmd & IMM))
         {
-            if ((error = write_double_to_buffer(&binBuffer, commandArg)))
+            if ((error = write_int_to_buffer(&binBuffer, (int) commandArg)))
             {
                 break;
             }
         }
     }, 
-    processor->IP++;
-
-    if ((int) command == (POP | REG))
     {
-        reg = (registerNames) *(processor->CS + processor->IP);
-
-        err = processor_pop_to_register(processor, reg);
-
         processor->IP++;
-    }
-    else if((int) command == (POP | RAM))
-    {
-        int adress = (int) *(processor->CS + processor->IP);
+        printf("command: %u\n", (unsigned int) command & COMMAND_MASK);
 
-        err = processor_pop_to_RAM(processor, adress);
+        if ((int) command == (POP | REG))
+        {
+            reg = (registerNames) *(processor->CS + processor->IP);
 
-        processor->IP += sizeof(int);
+            err = processor_pop_to_register(processor, reg);
+
+            processor->IP++;
+        }
+        else if(((unsigned int) command & COMMAND_MASK) == (POP | RAM | IMM))
+        {
+            int adress = -1;
+
+            if (copy_data_from_buffer(processor->CS + processor->IP, &adress, sizeof(int)))
+            {
+                RETURN(COPU_ARG_ERROR);
+            }
+            printf("adress: %d\n", adress);
+            err = processor_pop_to_RAM(processor, adress);
+
+            processor->IP += sizeof(int);
+        }
+        else if(((unsigned int) command & COMMAND_MASK) == (POP | IMM | REG | RAM))
+        {
+            int adress = -1;
+            reg = (registerNames) *(processor->CS + processor->IP);
+            processor->IP++;
+
+            if (copy_data_from_buffer(processor->CS + processor->IP, &adress, sizeof(int)))
+            {
+                RETURN(COPU_ARG_ERROR);
+            }
+
+            err = calculate_RAM_adress(processor, reg, &adress);
+
+            err = processor_pop_to_RAM(processor, adress);
+
+            processor->IP += sizeof(int);
+        }
     }
     )
 
