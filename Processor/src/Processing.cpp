@@ -34,7 +34,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
 
     registerNames reg = NO_REG;
     processorErrorCode err = NO_PROCESSOR_ERRORS;
-    for (size_t commNum = 0; commNum < processor->commandCount; commNum++)
+    while (true)
     {
         processor_dump(processor, FULL_DUMP);
         command = (commandCodes) *(processor->CS + processor->IP);
@@ -140,7 +140,7 @@ processorErrorCode processor_pop_to_register(softProcessorUnit* processor, regis
     assert(processor);
 
     int data = STACK_POP(&(processor->stack));
-    if (!data)
+    if (data == ELEM_T_POISON)
     {
         return POP_ERROR;
     }
@@ -311,13 +311,15 @@ enum processorErrorCode processor_mul(Stack* stack)
 
     int intNum2 = STACK_POP(stack);
     int intNum1 = STACK_POP(stack);
+    intNum1 /= DOUBLE_COEF;
+    intNum2 /= DOUBLE_COEF;
 
     if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
     {
         return POP_ERROR;
     }
 
-    if (STACK_PUSH(stack, (intNum1 * intNum2 / DOUBLE_COEF)))
+    if (STACK_PUSH(stack, (intNum1 * intNum2 * DOUBLE_COEF)))
     {
         return PUSH_ERROR;
     }

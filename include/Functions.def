@@ -384,7 +384,6 @@ DEF_CMD("pop", POP, 1,
     }, 
     {
         processor->IP++;
-        printf("command: %u\n", (unsigned int) command & COMMAND_MASK);
 
         if ((int) command == (POP | REG))
         {
@@ -402,7 +401,7 @@ DEF_CMD("pop", POP, 1,
             {
                 RETURN(COPU_ARG_ERROR);
             }
-            printf("adress: %d\n", adress);
+
             err = processor_pop_to_RAM(processor, adress);
 
             processor->IP += sizeof(int);
