@@ -51,10 +51,7 @@ processorErrorCode processor_ctor(softProcessorUnit* processor)
 
 processorErrorCode processor_dtor(softProcessorUnit* processor)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
 
     if (processor_verify(processor))
     {
@@ -76,10 +73,7 @@ processorErrorCode processor_dtor(softProcessorUnit* processor)
 
 processorErrorCode processor_dump(softProcessorUnit* processor, dumpMode mode)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
 
     if (processor_verify(processor))
     {
@@ -304,6 +298,7 @@ processorErrorCode copy_data_from_buffer(const char* buffer, void* ptr, size_t l
 processorErrorCode calculate_RAM_adress(softProcessorUnit* processor, registerNames reg, int* adress)
 {
     assert(processor);
+    assert(adress);
     assert(adress);
 
     switch (reg)

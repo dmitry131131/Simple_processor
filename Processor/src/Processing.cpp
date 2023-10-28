@@ -58,6 +58,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
     RETURN(NO_PROCESSOR_ERRORS);
 
     #undef RETURN
+    #undef DEF_CMD
 }
 
 processorErrorCode processor_jmp(softProcessorUnit* processor, int ip)
@@ -265,45 +266,36 @@ processorErrorCode processor_push(double num, Stack* stack)
     return NO_PROCESSOR_ERRORS;
 }
 
+#define ARIFM_OPER(oper) do{                                        \
+    assert(stack);                                                  \
+                                                                    \
+    int intNum2 = STACK_POP(stack);                                 \
+    int intNum1 = STACK_POP(stack);                                 \
+                                                                    \
+    if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON)       \
+    {                                                               \
+        return POP_ERROR;                                           \
+    }                                                               \
+                                                                    \
+    if (STACK_PUSH(stack, (intNum1 oper intNum2)))                  \
+    {                                                               \
+        return PUSH_ERROR;                                          \
+    }                                                               \
+                                                                    \
+    return NO_PROCESSOR_ERRORS;                                     \
+}while(0)
+
 processorErrorCode processor_add(Stack* stack)
 {
-    assert(stack);
-
-    int intNum2 = STACK_POP(stack);
-    int intNum1 = STACK_POP(stack);
-
-    if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
-    {
-        return POP_ERROR;
-    }
-
-    if (STACK_PUSH(stack, (intNum1 + intNum2)))
-    {
-        return PUSH_ERROR;
-    }
-
-    return NO_PROCESSOR_ERRORS;
+    ARIFM_OPER(+);
 }
 
 processorErrorCode processor_sub(Stack* stack)
 {
-    assert(stack);
-
-    int intNum2 = STACK_POP(stack);
-    int intNum1 = STACK_POP(stack);
-
-    if (intNum1 == ELEM_T_POISON || intNum2 == ELEM_T_POISON) 
-    {
-        return POP_ERROR;
-    }
-
-    if (STACK_PUSH(stack, intNum1 - intNum2))
-    {
-        return PUSH_ERROR;
-    }
-
-    return NO_PROCESSOR_ERRORS;
+    ARIFM_OPER(-);
 }
+
+#undef ARIFM_OPER
 
 processorErrorCode processor_mul(Stack* stack)
 {
