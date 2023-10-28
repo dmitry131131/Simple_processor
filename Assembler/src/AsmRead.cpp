@@ -67,18 +67,21 @@ static textData* remove_comments_from_text(textData* text)
     return text;
 }
 
-char* add_dot_bin_in_filename(const char* filename)
+asmErrorCode add_dot_bin_in_filename(const char* filename, char* newFilename)
 {
     assert(filename);
+    assert(newFilename);
 
     size_t len = strlen(filename);
-    char* newFilename = (char*) calloc(len + 5, sizeof(char));
 
-    if (!newFilename) return NULL;
+    if (len > MAX_FILENAME_SIZE - BIN_EXTENTION_SIZE)
+    {
+        return FILENAME_ERROR;
+    }
 
-    strcpy(newFilename, filename);
+    strncpy(newFilename, filename, MAX_FILENAME_SIZE - BIN_EXTENTION_SIZE);
 
-    strcat(newFilename, ".bin");
+    strcat(newFilename, BIN_EXTENTION);
 
-    return newFilename;
+    return NO_ASSEMBLER_ERRORS;
 }

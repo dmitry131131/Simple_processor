@@ -17,7 +17,8 @@ enum asmErrorCode {
     WRONG_REGISTER_NAME,
     FEW_CONSOLE_ARGS,
     WRONG_CONSOLE_ARGS,
-    TAG_NOT_FOUND
+    TAG_NOT_FOUND,
+    FILENAME_ERROR
 };
 
 void print_assembler_error_message(asmErrorCode error, FILE* stream);

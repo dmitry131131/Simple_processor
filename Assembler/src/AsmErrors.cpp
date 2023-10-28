@@ -44,6 +44,7 @@ void print_assembler_error_message(asmErrorCode error, FILE* stream)
         CHECK_CODE(FEW_CONSOLE_ARGS,         "Too few arguments for assembler!\n");
         CHECK_CODE(WRONG_CONSOLE_ARGS,       "Wrong arguments for assembler given!\n");
         CHECK_CODE(TAG_NOT_FOUND,            "Tag not found in tag buffer!\n");
+        CHECK_CODE(FILENAME_ERROR,           "Input filename error!\n");
 
     default:
         fprintf(stream, "Unknown error!\n");

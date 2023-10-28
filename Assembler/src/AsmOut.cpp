@@ -89,10 +89,7 @@ asmErrorCode write_header_info(FILE* outputTextFile, FILE* outputBinFile, int ve
                             "| command | opcode | ip | num arg | reg arg |           source          |\n"
                             "+---------+--------+----+---------+---------+---------------------------+\n");
 
-    if (write_char_to_bin_file(outputBinFile, 'A'))
-    {
-        // write error
-    }
+    write_char_to_bin_file(outputBinFile, 'A');
     write_char_to_bin_file(outputBinFile, 'D');
     write_int_to_bin_file(outputBinFile, version);
     write_int_to_bin_file(outputBinFile, (int) commandCount);

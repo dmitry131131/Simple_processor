@@ -10,14 +10,35 @@
 
 int main(const int argc, const char* argv[])
 {
-    textData* text = NULL;
-    asmErrorCode error = NO_ASSEMBLER_ERRORS;
-
     #define DESTRUCT_BUFFER_AND_RETURN do{      \
         remove_text(text);                      \
         tag_buffer_dtor(&tagBuffer);            \
         return 0;                               \
-    }while(0)           
+    }while(0)
+
+    #define MAIN_ASSEMBLING(inputFile) do{                                              \
+        text = asm_prepare(argv[1], &error);                                            \
+        if (error)                                                                      \
+        {                                                                               \
+            print_assembler_error_message(error, stderr);                               \
+            DESTRUCT_BUFFER_AND_RETURN;                                                 \
+        }                                                                               \
+                                                                                        \
+        if ((error = main_assembler_function(text, &tagBuffer, inputFile)))             \
+        {                                                                               \
+            print_assembler_error_message(error, stderr);                               \
+            DESTRUCT_BUFFER_AND_RETURN;                                                 \
+        }                                                                               \
+                                                                                        \
+        if ((error = main_assembler_function(text, &tagBuffer, inputFile)))             \
+        {                                                                               \
+            print_assembler_error_message(error, stderr);                               \
+            DESTRUCT_BUFFER_AND_RETURN;                                                 \
+        }                                                                               \
+    }while(0)
+
+    textData* text = NULL;
+    asmErrorCode error = NO_ASSEMBLER_ERRORS;        
 
     TagBuffer tagBuffer = {};
     if ((error = tag_buffer_ctor(&tagBuffer)))
@@ -34,35 +55,15 @@ int main(const int argc, const char* argv[])
 
     case 2:
         {
-            text = asm_prepare(argv[1], &error);
-            if (error)
+            char newFilename[MAX_FILENAME_SIZE] = {};
+
+            if ((error = add_dot_bin_in_filename(argv[1], newFilename)))
             {
-                print_assembler_error_message(error, stderr);
+                print_assembler_error_message(FILENAME_ERROR, stderr);
                 DESTRUCT_BUFFER_AND_RETURN;
             }
 
-            char* newFilename = add_dot_bin_in_filename(argv[1]);
-
-            if (!newFilename)
-            {
-                print_assembler_error_message(ALLOC_MEMORY_ERROR, stderr);
-                DESTRUCT_BUFFER_AND_RETURN;
-            }
-
-            if ((error = main_assembler_function(text, &tagBuffer, newFilename)))
-            {
-                print_assembler_error_message(error, stderr);
-                free(newFilename);
-                DESTRUCT_BUFFER_AND_RETURN;
-            }
-
-            if ((error = main_assembler_function(text, &tagBuffer, newFilename)))
-            {
-                print_assembler_error_message(error, stderr);
-                free(newFilename);
-                DESTRUCT_BUFFER_AND_RETURN;
-            }
-            free(newFilename);
+            MAIN_ASSEMBLING(newFilename);
         }
         break;
 
@@ -74,24 +75,7 @@ int main(const int argc, const char* argv[])
                 DESTRUCT_BUFFER_AND_RETURN;
             }
 
-            text = asm_prepare(argv[1], &error);
-            if (error)
-            {
-                print_assembler_error_message(error, stderr);
-                DESTRUCT_BUFFER_AND_RETURN;
-            }
-
-            if ((error = main_assembler_function(text, &tagBuffer, argv[3])))
-            {
-                print_assembler_error_message(error, stderr);
-                DESTRUCT_BUFFER_AND_RETURN;
-            }
-
-            if ((error = main_assembler_function(text, &tagBuffer, argv[3])))
-            {
-                print_assembler_error_message(error, stderr);
-                DESTRUCT_BUFFER_AND_RETURN;
-            }
+            MAIN_ASSEMBLING(argv[3]);
         }
         break;
     
@@ -102,3 +86,6 @@ int main(const int argc, const char* argv[])
     DESTRUCT_BUFFER_AND_RETURN;
     return 0;
 }
+
+#undef MAIN_ASSEMBLING
+#undef DESTRUCT_BUFFER_AND_RETURN

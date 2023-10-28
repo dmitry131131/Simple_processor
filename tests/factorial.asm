@@ -10,11 +10,6 @@ hlt
 
 
 :factorial
-
-    ; rbx = rax
-    push rax
-    pop rbx
-
     ; rax -= 1
     push rax
     push 1
