@@ -10,7 +10,9 @@ const int COMMAND_PART = 0b11111;
 const int ADDON_PART   = 0b11100000;
 const unsigned int COMMAND_MASK = 0x000000FF;
 
-const size_t RAM_SIZE       = 15;
+const size_t RAM_SIZE       = 200;
+const size_t VRAM_SIZE      = 100;
+const size_t VRAM_ADRESS    = RAM_SIZE - VRAM_SIZE - 1;
 const size_t STACK_SIZE     = 10;
 const size_t RET_STACK_SIZE = 10;
 
@@ -77,6 +79,8 @@ processorErrorCode processor_call(softProcessorUnit* processor, int ip);
 
 processorErrorCode processor_ret(softProcessorUnit* processor);
 
-enum processorErrorCode processor_hlt(Stack* stack);
+processorErrorCode processor_console_draw(const softProcessorUnit* processor);
+
+processorErrorCode processor_hlt(Stack* stack);
 
 #endif

@@ -36,7 +36,7 @@ enum processorErrorCode processing(softProcessorUnit* processor)
     processorErrorCode err = NO_PROCESSOR_ERRORS;
     while (true)
     {
-        processor_dump(processor, FULL_DUMP);
+        // processor_dump(processor, FULL_DUMP);
         command = (commandCodes) *(processor->CS + processor->IP);
 
         switch (command & COMMAND_PART)
@@ -251,7 +251,7 @@ processorErrorCode processor_push_from_register(softProcessorUnit* processor, re
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_push(double num, Stack* stack)
+processorErrorCode processor_push(double num, Stack* stack)
 {
     assert(stack);
 
@@ -265,7 +265,7 @@ enum processorErrorCode processor_push(double num, Stack* stack)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_add(Stack* stack)
+processorErrorCode processor_add(Stack* stack)
 {
     assert(stack);
 
@@ -285,7 +285,7 @@ enum processorErrorCode processor_add(Stack* stack)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_sub(Stack* stack)
+processorErrorCode processor_sub(Stack* stack)
 {
     assert(stack);
 
@@ -305,7 +305,7 @@ enum processorErrorCode processor_sub(Stack* stack)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_mul(Stack* stack)
+processorErrorCode processor_mul(Stack* stack)
 {
     assert(stack);
 
@@ -327,7 +327,7 @@ enum processorErrorCode processor_mul(Stack* stack)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_div(Stack* stack)
+processorErrorCode processor_div(Stack* stack)
 {
     assert(stack);
 
@@ -352,7 +352,7 @@ enum processorErrorCode processor_div(Stack* stack)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_out(Stack* stack, FILE* stream)
+processorErrorCode processor_out(Stack* stack, FILE* stream)
 {
     assert(stack);
 
@@ -368,7 +368,7 @@ enum processorErrorCode processor_out(Stack* stack, FILE* stream)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_sqrt(Stack* stack)
+processorErrorCode processor_sqrt(Stack* stack)
 {
     assert(stack);
 
@@ -387,7 +387,7 @@ enum processorErrorCode processor_sqrt(Stack* stack)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_trig(Stack* stack, commandCodes mode)
+processorErrorCode processor_trig(Stack* stack, commandCodes mode)
 {
     assert(stack);
 
@@ -425,7 +425,7 @@ enum processorErrorCode processor_trig(Stack* stack, commandCodes mode)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_in(Stack* stack)
+processorErrorCode processor_in(Stack* stack)
 { 
     assert(stack);
 
@@ -481,9 +481,34 @@ processorErrorCode processor_ret(softProcessorUnit* processor)
     return NO_PROCESSOR_ERRORS;
 }
 
-enum processorErrorCode processor_hlt(Stack* stack)
+processorErrorCode processor_hlt(Stack* stack)
 {
     assert(stack);
     
+    return NO_PROCESSOR_ERRORS;
+}
+
+processorErrorCode processor_console_draw(const softProcessorUnit* processor)
+{
+    assert(processor);
+
+    size_t rowSize = (size_t) sqrt(VRAM_SIZE);
+
+    for (size_t i = 0; i < VRAM_SIZE; i++)
+    {
+        if (processor->RAM[VRAM_ADRESS + i] == 1 * DOUBLE_COEF)
+        {
+            printf("0 ");
+        }
+        else 
+        {
+            printf("  ");
+        }
+        if ((i + 1) % rowSize == 0)
+        {
+            printf("\n");
+        }
+    }
+
     return NO_PROCESSOR_ERRORS;
 }

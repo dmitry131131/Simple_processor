@@ -406,6 +406,19 @@ DEF_CMD("pop", POP, 1,
 
             processor->IP += sizeof(int);
         }
+        else if(((unsigned int) command & COMMAND_MASK) == (POP | RAM | REG))
+        {
+            int adress = 0;
+
+            reg = (registerNames) *(processor->CS + processor->IP);
+            
+            err = calculate_RAM_adress(processor, reg, &adress);
+
+            err = processor_pop_to_RAM(processor, adress);
+
+            processor->IP += sizeof(char);
+        }
+
         else if(((unsigned int) command & COMMAND_MASK) == (POP | IMM | REG | RAM))
         {
             int adress = -1;
@@ -524,5 +537,13 @@ DEF_CMD("hlt", HLT, 0,
     processor->IP++;
     RETURN(NO_PROCESSOR_ERRORS);
     )
+
+DEF_CMD("draw", DRAW, 0,
+    {
+        WRITE_SINGLE_COMMAND("draw", DRAW);
+    },
+    err = processor_console_draw(processor);
+    processor->IP++;
+)
 
 #undef WRITE_SINGLE_COMMAND

@@ -29,7 +29,8 @@ enum commandCodes {
     JE          = 19,
     JNE         = 20,
     CALL        = 21,
-    RET         = 22
+    RET         = 22,
+    DRAW        = 23
 };
 
 enum argumentsAddons {
