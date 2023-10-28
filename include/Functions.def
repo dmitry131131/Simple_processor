@@ -1,42 +1,40 @@
-#define WRITE_COMMAND_TO_LISTING(command, code, arg)do{                                                                 \
+#define WRITE_COMMAND_TO_LISTING(command, code, arg, reg)do{                                                            \
     textBuffer.bufferPointer += (size_t)                                                                                \
     sprintf((textBuffer.Buffer + textBuffer.bufferPointer),                                                             \
-    "%" LISTING_COMMAND_FORMAT "s""%" LISTING_COMMAND_FORMAT "d"                                                        \
-    "%" LISTING_COMMAND_FORMAT "d""%s\n", (command), (code), (arg), text->linesPtr[i]);                                 \
+    "|%-9s|%-8d|%-4d|%-9d|%-9d|%-27s|\n"                                                                                \
+    "+---------+--------+----+---------+---------+---------------------------+\n",                                      \
+    (command), (code), (int) binBuffer.bufferPointer, (arg), (reg), remove_space_from_begining(text->linesPtr[i]));     \
 }while(0)
 
 #define WRITE_SINGLE_COMMAND_TO_LISTING(command, code)do{                                                               \
     textBuffer.bufferPointer += (size_t)                                                                                \
     sprintf((textBuffer.Buffer + textBuffer.bufferPointer),                                                             \
-    "%" LISTING_COMMAND_FORMAT "s""%-20d""%s\n", (command), (code), text->linesPtr[i]);                                 \
+    "|%-9s|%-8d|%-4d|  -----  |  -----  |%-27s|\n"                                                                      \
+    "+---------+--------+----+---------+---------+---------------------------+\n",                                      \
+    (command), (code), (int) binBuffer.bufferPointer, remove_space_from_begining(text->linesPtr[i]));                   \
 }while(0)
 
 #define WRITE_DOUBLE_COMMAND_TO_LISTING(command, code, arg)do{                                                          \
     textBuffer.bufferPointer += (size_t)                                                                                \
     sprintf((textBuffer.Buffer + textBuffer.bufferPointer),                                                             \
-    "%" LISTING_COMMAND_FORMAT "s""%" LISTING_COMMAND_FORMAT "d"                                                        \
-    "%" LISTING_COMMAND_FORMAT "lf""%s\n", (command), (code), (arg), text->linesPtr[i]);                                \
+    "|%-9s|%-8d|%-4d|%-9lf|  -----  |%-27s|\n"                                                                          \
+    "+---------+--------+----+---------+---------+---------------------------+\n",                                      \
+    (command), (code), (int) binBuffer.bufferPointer, (arg), remove_space_from_begining(text->linesPtr[i]));            \
 }while(0)
 
 #define WRITE_SINGLE_COMMAND(command, num) do{                                                                          \
     commandCount++;                                                                                                     \
     WRITE_SINGLE_COMMAND_TO_LISTING(command, num);                                                                      \
     write_char_to_buffer(&binBuffer, num);                                                                              \
-                                                                                                                        \
 }while(0)
 
 #define JUMP_ASSEMBLER(jmp_name, jmp_type) {                                                                            \
     commandCount++;                                                                                                     \
                                                                                                                         \
-    if ((error = write_char_to_buffer(&binBuffer, jmp_type)))                                                           \
-    {                                                                                                                   \
-        break;                                                                                                          \
-    }                                                                                                                   \
-                                                                                                                        \
     int tagIp = -1;                                                                                                     \
     if (sscanf(text->linesPtr[i], "%s %d", command, &tagIp) == 2)                                                       \
     {                                                                                                                   \
-        WRITE_COMMAND_TO_LISTING(jmp_name, jmp_type, tagIp);                                                            \
+        WRITE_COMMAND_TO_LISTING(jmp_name, jmp_type, tagIp, -1);                                                        \
                                                                                                                         \
         if ((error = write_int_to_buffer(&binBuffer, tagIp)))                                                           \
         {                                                                                                               \
@@ -46,7 +44,6 @@
     }                                                                                                                   \
                                                                                                                         \
     char tagName[MAX_COMMAND_LEN] = {};                                                                                 \
-                                                                                                                        \
     if (sscanf(text->linesPtr[i], "%s %s", command, tagName) != 2)                                                      \
     {                                                                                                                   \
         error = INVALID_SYNTAX;                                                                                         \
@@ -57,8 +54,12 @@
     tagIp = -1;                                                                                                         \
     get_tag_ip(tagBuffer, tagName, &tagIp);                                                                             \
                                                                                                                         \
-    WRITE_COMMAND_TO_LISTING(jmp_name, jmp_type, tagIp);                                                                \
+    WRITE_COMMAND_TO_LISTING(jmp_name, jmp_type, tagIp, -1);                                                            \
                                                                                                                         \
+    if ((error = write_char_to_buffer(&binBuffer, jmp_type)))                                                           \
+    {                                                                                                                   \
+        break;                                                                                                          \
+    }                                                                                                                   \
     if ((error = write_int_to_buffer(&binBuffer, tagIp)))                                                               \
     {                                                                                                                   \
         break;                                                                                                          \
@@ -243,12 +244,12 @@ DEF_CMD("push", PUSH, 1,
 
             if (error) break;
 
+            WRITE_COMMAND_TO_LISTING("push", cmd, (int) commandArg, reg);
+
             if ((error = write_char_to_buffer(&binBuffer, cmd)))
             {
                 break;
             }
-
-            WRITE_DOUBLE_COMMAND_TO_LISTING("push", cmd, commandArg);
 
             if (cmd & REG)
             {
@@ -371,12 +372,14 @@ DEF_CMD("pop", POP, 1,
             CHECH_TEXT_ARG(textArgName)
         }
 
+        if (error) break;
+
+        WRITE_COMMAND_TO_LISTING("pop", cmd, (int) commandArg, reg);
+
         if ((error = write_char_to_buffer(&binBuffer, cmd)))
         {
             break;
         }
-
-        WRITE_COMMAND_TO_LISTING("pop", cmd, reg);
 
         if (cmd & REG)
         {

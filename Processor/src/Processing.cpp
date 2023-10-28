@@ -493,6 +493,7 @@ processorErrorCode processor_console_draw(const softProcessorUnit* processor)
     assert(processor);
 
     size_t rowSize = (size_t) sqrt(VRAM_SIZE);
+    printf("row size: %lu\n", rowSize);
 
     for (size_t i = 0; i < VRAM_SIZE; i++)
     {
@@ -504,7 +505,7 @@ processorErrorCode processor_console_draw(const softProcessorUnit* processor)
         {
             printf("  ");
         }
-        if ((i + 1) % rowSize == 0)
+        if ((i + 1) % (rowSize + 1) == 0)
         {
             printf("\n");
         }

@@ -85,7 +85,9 @@ asmErrorCode write_header_info(FILE* outputTextFile, FILE* outputBinFile, int ve
     fprintf(outputTextFile, "AD\n");
     fprintf(outputTextFile, "Version %d\n", version);
     fprintf(outputTextFile, "%lu commands\n\n", commandCount);
-    fprintf(outputTextFile, "command   code      argument  source\n\n");
+    fprintf(outputTextFile, "+---------+--------+----+---------+---------+---------------------------+\n"
+                            "| command | opcode | ip | num arg | reg arg |           source          |\n"
+                            "+---------+--------+----+---------+---------+---------------------------+\n");
 
     if (write_char_to_bin_file(outputBinFile, 'A'))
     {
@@ -150,6 +152,17 @@ asmErrorCode write_double_to_buffer(outputBuffer* buffer, double num)
     buffer->bufferPointer += sizeof(double);
 
     return NO_ASSEMBLER_ERRORS;
+}
+
+char* remove_space_from_begining(char* str)
+{
+    assert(str);
+    while (*str == ' ') 
+    {
+        str++;
+    }
+
+    return str;
 }
 
 asmErrorCode write_double_to_bin_file(FILE* file, double num)

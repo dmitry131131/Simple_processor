@@ -35,6 +35,7 @@ asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer, const
 
     assert(text);
     assert(tagBuffer);
+    assert(filename);
 
     outputBuffer binBuffer  = {};
     outputBuffer textBuffer = {};
@@ -46,7 +47,7 @@ asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer, const
         return error;
     }
 
-    if ((error = buffer_ctor(&textBuffer, text->bufferSize * 8)))
+    if ((error = buffer_ctor(&textBuffer, text->bufferSize * 10)))
     {
         assert(!error);
         return error;

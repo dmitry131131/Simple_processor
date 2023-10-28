@@ -33,6 +33,8 @@ asmErrorCode write_double_to_bin_file(FILE* file, double num);
 
 asmErrorCode create_command_buffer(char** buffer, size_t size);
 
+char* remove_space_from_begining(char* str);
+
 asmErrorCode write_double_to_buffer(outputBuffer* buffer, double num);
 
 asmErrorCode write_char_to_buffer(outputBuffer* buffer, unsigned char num);

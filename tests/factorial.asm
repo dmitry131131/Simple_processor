@@ -1,31 +1,36 @@
 ; programm to solve factorial of integer
 in
-pop [1]
+pop rax
 push 1
-pop [2]
+pop rbx
 call factorial
-push [2]
+push rbx
 out
 hlt
 
 
 :factorial
+
+    ; rbx = rax
+    push rax
+    pop rbx
+
+    ; rax -= 1
+    push rax
+    push 1
+    sub
+    pop rax
+
     ; if rax == 0 return
     push 1
-    push [1]
+    push rax
     je return
 
     ; rbx *= rax
-    push [2]
-    push [1]
+    push rbx
+    push rax
     mul
-    pop [2]
-    
-    ; rax -= 1
-    push [1]
-    push 1
-    sub
-    pop [1]
+    pop rbx
 
     call factorial
 
