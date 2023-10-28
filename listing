@@ -1,0 +1,16 @@
+AD
+Version 2
+10 commands
+
+command   code      argument  source
+
+in        11                  in
+pop       77        1         pop rax
+push      65        0.000000  push rax
+push      33        1000.000000push 1000
+je        19        36        je stop
+push      33        1.000000  push 1
+pop       205       1         pop [rax]
+draw      23                  draw
+jmp       14        0         jmp ret
+hlt       12                  hlt

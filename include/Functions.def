@@ -308,6 +308,18 @@ DEF_CMD("push", PUSH, 1,
 
             processor->IP += sizeof(int);
         }
+        else if(((unsigned int) command & COMMAND_MASK) == (PUSH | RAM | REG))
+        {
+            int adress = 0;
+
+            reg = (registerNames) *(processor->CS + processor->IP);
+            
+            err = calculate_RAM_adress(processor, reg, &adress);
+
+            err = processor_pop_to_RAM(processor, adress);
+
+            processor->IP += sizeof(char);
+        }
         else if (((unsigned int) command & COMMAND_MASK) == (PUSH | RAM | REG | IMM))
         {
             int adress = -1;
@@ -418,7 +430,6 @@ DEF_CMD("pop", POP, 1,
 
             processor->IP += sizeof(char);
         }
-
         else if(((unsigned int) command & COMMAND_MASK) == (POP | IMM | REG | RAM))
         {
             int adress = -1;
