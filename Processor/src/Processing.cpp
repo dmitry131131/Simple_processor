@@ -15,15 +15,6 @@
 
 enum processorErrorCode processing(softProcessorUnit* processor)
 {
-
-    #define RETURN(error) do{               \
-        if (processor_dtor(processor))      \
-        {                                   \
-            return DTOR_ERROR;              \
-        }                                   \
-        return error;                       \
-    }while(0)
-
     #define DEF_CMD(name, num, arg, asm_code, proc_code)    \
         case num:                                           \
             proc_code                                       \
@@ -51,13 +42,12 @@ enum processorErrorCode processing(softProcessorUnit* processor)
 
         if (err)
         {
-            RETURN(err);
+            return err;
         }
     }
 
-    RETURN(NO_PROCESSOR_ERRORS);
+    return NO_PROCESSOR_ERRORS;
 
-    #undef RETURN
     #undef DEF_CMD
 }
 
@@ -182,7 +172,7 @@ processorErrorCode processor_pop_to_RAM(softProcessorUnit* processor, int adress
     assert(processor);
 
     int data = STACK_POP(&(processor->stack));
-    if (!data)
+    if (data == ELEM_T_POISON)
     {
         return POP_ERROR;
     }
@@ -203,7 +193,7 @@ processorErrorCode processor_push_from_RAM(softProcessorUnit* processor, int adr
         return BAD_ADRESS;
     }
 
-    if (STACK_PUSH(&(processor->stack), processor->RAM[adress]))
+    if (STACK_PUSH(&(processor->stack), (processor->RAM)[adress]))
     {
         return PUSH_ERROR;
     }
@@ -497,7 +487,7 @@ processorErrorCode processor_console_draw(const softProcessorUnit* processor)
         {
             printf("  ");
         }
-        if ((i + 1) % (rowSize + 1) == 0)
+        if ((i + 1) % rowSize == 0)
         {
             printf("\n");
         }

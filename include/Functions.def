@@ -84,7 +84,7 @@
     int newIp = -1;                                                                                                     \
     if (copy_data_from_buffer(processor->CS + processor->IP, &newIp, sizeof(int)))                                      \
     {                                                                                                                   \
-        RETURN(COPU_ARG_ERROR);                                                                                         \
+        return COPU_ARG_ERROR;                                                                                          \
     }
 
 /*---------------------------------------->>     ~~PUSH/POP MACROSES~~      <<-----------------------------------------*/
@@ -300,7 +300,7 @@ DEF_CMD("push", PUSH, 1,
         {
             if (copy_data_from_buffer(processor->CS + processor->IP, &commandArg, sizeof(double)))
             {
-                RETURN(COPU_ARG_ERROR);
+                return COPU_ARG_ERROR;
             }
 
             err = processor_push(commandArg, &(processor->stack));
@@ -320,7 +320,7 @@ DEF_CMD("push", PUSH, 1,
             int adress = -1;
             if (copy_data_from_buffer(processor->CS + processor->IP, &adress, sizeof(int)))
             {
-                RETURN(COPU_ARG_ERROR);
+                return COPU_ARG_ERROR;
             }
 
             err = processor_push_from_RAM(processor, adress);
@@ -335,7 +335,7 @@ DEF_CMD("push", PUSH, 1,
             
             err = calculate_RAM_adress(processor, reg, &adress);
 
-            err = processor_pop_to_RAM(processor, adress);
+            err = processor_push_from_RAM(processor, adress);
 
             processor->IP += sizeof(char);
         }
@@ -347,7 +347,7 @@ DEF_CMD("push", PUSH, 1,
 
             if (copy_data_from_buffer(processor->CS + processor->IP, &adress, sizeof(int)))
             {
-                RETURN(COPU_ARG_ERROR);
+                return COPU_ARG_ERROR;
             }
 
             err = calculate_RAM_adress(processor, reg, &adress);
@@ -389,7 +389,7 @@ DEF_CMD("pop", POP, 1,
 
             if (copy_data_from_buffer(processor->CS + processor->IP, &adress, sizeof(int)))
             {
-                RETURN(COPU_ARG_ERROR);
+                return COPU_ARG_ERROR;
             }
 
             err = processor_pop_to_RAM(processor, adress);
@@ -416,7 +416,7 @@ DEF_CMD("pop", POP, 1,
 
             if (copy_data_from_buffer(processor->CS + processor->IP, &adress, sizeof(int)))
             {
-                RETURN(COPU_ARG_ERROR);
+                return COPU_ARG_ERROR;
             }
 
             err = calculate_RAM_adress(processor, reg, &adress);
@@ -521,7 +521,7 @@ DEF_CMD("hlt", HLT, 0,
     },
     err = processor_hlt(&(processor->stack));
     processor->IP++;
-    RETURN(NO_PROCESSOR_ERRORS);
+    return NO_PROCESSOR_ERRORS;
     )
 
 DEF_CMD("draw", DRAW, 0,

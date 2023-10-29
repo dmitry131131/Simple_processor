@@ -36,6 +36,6 @@ enum processorErrorCode {
 
 void print_processor_error_message(FILE* stream, processorErrorCode error);
 
-void print_processor_error(FILE* stream, processorErrorCode error);
+void print_processor_error(FILE* stream, processorErrorCode error, size_t ip);
 
 #endif

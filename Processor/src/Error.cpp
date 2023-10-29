@@ -7,9 +7,11 @@
 #include "Error.h"
 #include "Color_output.h"
 
-void print_processor_error(FILE* stream, processorErrorCode error)
+void print_processor_error(FILE* stream, processorErrorCode error, size_t ip)
 {
     print_processor_error_message(stream, error);
+    color_fprintf(stream, COLOR_BLUE, STYLE_UNDERLINED, "Instruction pointer(IP):");
+    fprintf(stream, " %lu\n", ip);
 }
 
 void print_processor_error_message(FILE* stream, processorErrorCode error)

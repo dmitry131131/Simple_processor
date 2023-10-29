@@ -53,11 +53,6 @@ processorErrorCode processor_dtor(softProcessorUnit* processor)
 {
     assert(processor);
 
-    if (processor_verify(processor))
-    {
-        return VERIFY_ERROR;
-    }
-
     processor->IP = 0;
     processor->rax = processor->rbx = processor->rcx = processor->rdx = 0;
     processor->commandCount = 0;
