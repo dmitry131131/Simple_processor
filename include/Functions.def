@@ -10,24 +10,24 @@
 #define WRITE_COMMAND_TO_LISTING(command, code, arg, reg)do{                                                            \
     textBuffer.bufferPointer += (size_t)                                                                                \
     sprintf((textBuffer.Buffer + textBuffer.bufferPointer),                                                             \
-    "|%-9s|%-8d|%-4d|%-9d|%-9d|%-27s|\n"                                                                                \
-    "+---------+--------+----+---------+---------+---------------------------+\n",                                      \
+    "|%-9s|%-8d|%-6d|%-13d|%-9d|%-27s|\n"                                                                               \
+    "+---------+--------+------+-------------+---------+---------------------------+\n",                                  \
     (command), (code), (int) binBuffer.bufferPointer, (arg), (reg), remove_space_from_begining(text->linesPtr[i]));     \
 }while(0)
 
 #define WRITE_SINGLE_COMMAND_TO_LISTING(command, code)do{                                                               \
     textBuffer.bufferPointer += (size_t)                                                                                \
     sprintf((textBuffer.Buffer + textBuffer.bufferPointer),                                                             \
-    "|%-9s|%-8d|%-4d|  -----  |  -----  |%-27s|\n"                                                                      \
-    "+---------+--------+----+---------+---------+---------------------------+\n",                                      \
+    "|%-9s|%-8d|%-6d|    -----    |  -----  |%-27s|\n"                                                                  \
+    "+---------+--------+------+-------------+---------+---------------------------+\n",                                  \
     (command), (code), (int) binBuffer.bufferPointer, remove_space_from_begining(text->linesPtr[i]));                   \
 }while(0)
 
 #define WRITE_DOUBLE_COMMAND_TO_LISTING(command, code, arg)do{                                                          \
     textBuffer.bufferPointer += (size_t)                                                                                \
     sprintf((textBuffer.Buffer + textBuffer.bufferPointer),                                                             \
-    "|%-9s|%-8d|%-4d|%-9lf|  -----  |%-27s|\n"                                                                          \
-    "+---------+--------+----+---------+---------+---------------------------+\n",                                      \
+    "|%-9s|%-8d|%-6d|%-13.2lf|  -----  |%-27s|\n"                                                                       \
+    "+---------+--------+------+-------------+---------+---------------------------+\n",                                  \
     (command), (code), (int) binBuffer.bufferPointer, (arg), remove_space_from_begining(text->linesPtr[i]));            \
 }while(0)
 

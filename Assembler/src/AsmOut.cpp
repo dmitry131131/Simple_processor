@@ -85,9 +85,9 @@ asmErrorCode write_header_info(FILE* outputTextFile, FILE* outputBinFile, int ve
     fprintf(outputTextFile, "AD\n");
     fprintf(outputTextFile, "Version %d\n", version);
     fprintf(outputTextFile, "%lu commands\n\n", commandCount);
-    fprintf(outputTextFile, "+---------+--------+----+---------+---------+---------------------------+\n"
-                            "| command | opcode | ip | num arg | reg arg |           source          |\n"
-                            "+---------+--------+----+---------+---------+---------------------------+\n");
+    fprintf(outputTextFile, "+---------+--------+------+-------------+---------+---------------------------+\n"
+                            "| command | opcode |  ip  |   num arg   | reg arg |           source          |\n"
+                            "+---------+--------+------+-------------+---------+---------------------------+\n");
 
     write_char_to_bin_file(outputBinFile, 'A');
     write_char_to_bin_file(outputBinFile, 'D');
