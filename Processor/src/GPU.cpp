@@ -56,10 +56,6 @@ processorErrorCode graphics_draw(const softProcessorUnit* processor, sf::RenderW
 
         window->display();
     }
-    /*
-
-    
-    */
 
     return NO_PROCESSOR_ERRORS;
 }
