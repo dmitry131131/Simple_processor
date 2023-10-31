@@ -24,37 +24,23 @@ processorErrorCode graphics_draw(const softProcessorUnit* processor, sf::RenderW
 
     size_t rowSize = (size_t) sqrt(VRAM_SIZE);
 
-    while (window->isOpen())
+    size_t row = 0;
+    for (size_t i = 0; i < VRAM_SIZE; i++)
     {
-        sf::Event event;
-        while (window->pollEvent(event))
+        if (processor->RAM[VRAM_ADRESS + i] == 1 * DOUBLE_COEF)
         {
-            if (event.type == sf::Event::Closed)
-                window->close();
+            window->draw(shape);
+        }
+        else 
+        {
+            
+        }
+        if ((i + 1) % rowSize == 0)
+        {
+            row++;
         }
 
-        window->clear();
-
-        size_t row = 0;
-        for (size_t i = 0; i < VRAM_SIZE; i++)
-        {
-            if (processor->RAM[VRAM_ADRESS + i] == 1 * DOUBLE_COEF)
-            {
-                window->draw(shape);
-            }
-            else 
-            {
-                
-            }
-            if ((i + 1) % rowSize == 0)
-            {
-                row++;
-            }
-
-        shape.setPosition((float) (PIXEL_SIZE * (i % rowSize)), (float) (PIXEL_SIZE*row));
-        }
-
-        window->display();
+    shape.setPosition((float) (PIXEL_SIZE * (i % rowSize)), (float) (PIXEL_SIZE*row));
     }
 
     return NO_PROCESSOR_ERRORS;

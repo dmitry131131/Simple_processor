@@ -60,14 +60,15 @@ int main(int argc, char* argv[])
     #endif
 
     pthread_join(processorThread, NULL);
-    if (processorThreadStructData.error)
-    {
-        return 0;
-    }
     
     #ifdef USE_GRAPHICS
     pthread_join(GPUThread, NULL);
     #endif
+
+    if (processorThreadStructData.error)
+    {
+        RETURN(0);
+    }
 
     RETURN(0);
 }
@@ -76,14 +77,6 @@ int main(int argc, char* argv[])
 
 void* processor_thread_function(void* threadData)
 {
-    #define RETURN do{                                                      \
-        if (processor_dtor(&(threadStructData->processor)))                 \
-        {                                                                   \
-            threadStructData->error = DTOR_ERROR;                           \
-            return NULL;                                                    \
-        }                                                                   \
-    }while(0)
-
     processorThreadStruct* threadStructData = (processorThreadStruct*) threadData;
 
     if ((threadStructData->error = processing(&(threadStructData->processor))))
@@ -91,11 +84,10 @@ void* processor_thread_function(void* threadData)
         print_processor_error(stderr, threadStructData->error, threadStructData->processor.IP);
         processor_dump(&(threadStructData->processor), FULL_DUMP);
         
-        RETURN;
+        return NULL;
     }
 
     return NULL;
-    #undef RETURN
 }
 
 void* GPU_thread_function(void* threadData)
@@ -104,7 +96,25 @@ void* GPU_thread_function(void* threadData)
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "Graphics window");
 
-    graphics_draw(&(threadStructData->processor), &window);
+    while (window.isOpen())
+    {
+        if (threadStructData->error)
+        {
+            window.close();
+            return NULL;
+        }
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
 
+        window.clear();
+
+        graphics_draw(&(threadStructData->processor), &window);
+
+        window.display();
+    }
     return NULL;
 }
