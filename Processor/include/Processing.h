@@ -5,6 +5,8 @@
 #ifndef PROCESSING_H
 #define PROCESSING_H
 
+#define USE_GRAPHICS
+
 const int DOUBLE_COEF  = 10000;
 const int COMMAND_PART = 0b11111;
 const int ADDON_PART   = 0b11100000;
@@ -13,6 +15,9 @@ const unsigned int COMMAND_MASK = 0x000000FF;
 const size_t RAM_SIZE       = 2701;
 const size_t VRAM_SIZE      = 2601;
 const size_t VRAM_ADRESS    = RAM_SIZE - VRAM_SIZE;
+const unsigned int PIXEL_SIZE = 15;
+const unsigned int WINDOW_SIZE = 52*PIXEL_SIZE;
+
 const size_t STACK_SIZE     = 10;
 const size_t RET_STACK_SIZE = 10;
 

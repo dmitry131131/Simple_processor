@@ -16,8 +16,9 @@ SourcePrefix = src/
 BuildPrefix = build/
 BuildFolder = build
 Include = -Iinclude -IStack_task/include -IOnegin_task/include -IOnegin_task/Color_console_output/include/ -I../include
+Libs = -lsfml-graphics -lsfml-window -lsfml-system
 
-Sources = Processing.cpp Read.cpp ProcessorUtils.cpp Error.cpp
+Sources = Processing.cpp Read.cpp ProcessorUtils.cpp Error.cpp GPU.cpp
 Main = main.cpp
 
 LibObjects = Stack_task/Color_console_output/build/Color_output.o Stack_task/build/Hash.o Stack_task/build/Output.o\
@@ -44,7 +45,7 @@ $(BuildPrefix)%.o : $(SourcePrefix)%.cpp
 
 $(TARGET) : $(LibObjects) $(objects) $(MainObject)
 	@echo [CC] $^ -o $@
-	@$(CXX) $(CXXFLAGS) $(Include) $^ -o $@
+	@$(CXX) $(CXXFLAGS) $(Include) $(Libs) $^ -o $@
 
 clean :
 	rm $(BuildFolder)/*.o

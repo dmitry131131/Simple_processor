@@ -12,52 +12,28 @@
 
 processorErrorCode prepare(const char* filename, softProcessorUnit* processor)
 {
-    #define RETURN(error) do{               \
-        if (processor_dtor(processor))      \
-        {                                   \
-            return DTOR_ERROR;              \
-        }                                   \
-        return error;                       \
-    }while(0)
-
-    if (!filename)
-    {
-        return NULL_POINTER;
-    }
-
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
+    assert(filename);
+    assert(processor);
 
     processorErrorCode error = NO_PROCESSOR_ERRORS;
 
     if ((error = processor_ctor(processor)))
     {
-        RETURN(error);
+        return error;
     }
 
     if ((error = read_bin_file(filename, processor)))
     {
-        RETURN(error);
+        return error;
     }
 
-
-    #undef RETURN
     return error;
 }
 
 processorErrorCode read_bin_file(const char* filename, softProcessorUnit* processor)
 {
-    if (!processor)
-    {
-        return NULL_POINTER;
-    }
-
-    if (!filename)
-    {
-        return NULL_POINTER;
-    }
+    assert(processor);
+    assert(filename);
 
     FILE* file = fopen(filename, "rb");
 
@@ -142,15 +118,8 @@ processorErrorCode read_bin_file(const char* filename, softProcessorUnit* proces
 
 processorErrorCode read_programm_body(FILE* file, char** buff, size_t len)
 {
-    if (!file)
-    {
-        return NULL_POINTER;
-    }
-
-    if (!buff)
-    {
-        return NULL_POINTER;
-    }
+    assert(file);
+    assert(buff);
 
     size_t realLen = fread(*buff, sizeof(char), len, file);
     if (realLen != len)
@@ -163,10 +132,7 @@ processorErrorCode read_programm_body(FILE* file, char** buff, size_t len)
 
 processorErrorCode read_char_from_file(FILE* file, char* ch)
 {
-    if (!file)
-    {
-        return NULL_POINTER;
-    }
+    assert(file);
 
     if (fread(ch, sizeof(char), 1, file) != 1)
     {
@@ -177,10 +143,7 @@ processorErrorCode read_char_from_file(FILE* file, char* ch)
 
 processorErrorCode read_int_from_file(FILE* file, int* num)
 {
-    if (!file)
-    {
-        return NULL_POINTER;
-    }
+    assert(file);
 
     if (fread(num, sizeof(int), 1, file) != 1)
     {
@@ -191,10 +154,9 @@ processorErrorCode read_int_from_file(FILE* file, int* num)
 
 processorErrorCode filename_getter(int argc, char* argv[], char** filename)
 {
-    if (!argv || !filename)
-    {
-        return NULL_POINTER;
-    }
+    assert(argv);
+    assert(filename);
+    
     if (argc < 2)
     {
         return BAD_FILENAME;
