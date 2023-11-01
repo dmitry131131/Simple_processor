@@ -31,7 +31,7 @@ processorErrorCode processor_ctor(softProcessorUnit* processor)
     processor->commandCount         = 0;
     processor->CS                   = NULL;
 
-    processor->RAM                  = (int*) calloc(RAM_SIZE, sizeof(int));
+    processor->RAM                  = (int*) calloc(MEMORY_SIZE, sizeof(int));
 
     STACK_CTOR(&(processor->stack),    STACK_SIZE);
     STACK_CTOR(&(processor->retStack), RET_STACK_SIZE);
