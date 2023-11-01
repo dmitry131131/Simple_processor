@@ -15,12 +15,12 @@ TARGET = disasm
 SourcePrefix = src/
 BuildPrefix = build/
 BuildFolder = build
-Include = -Iinclude -IStack_task/include
+Include = -Iinclude -IColor_console_output/include -I../include
 
-Sources = 
+Sources = Read.cpp Error.cpp Disassembling.cpp DisassemblerUtils.cpp
 Main = main.cpp
 
-LibObjects = 
+LibObjects = Color_console_output/build/Color_output.o
 
 Source = $(addprefix $(SourcePrefix), $(Sources))
 MainObject = $(patsubst %.cpp, $(BuildPrefix)%.o, $(Main))
@@ -32,13 +32,13 @@ objects = $(patsubst $(SourcePrefix)%.cpp, $(BuildPrefix)%.o, $(Source))
 all : prepare folder $(TARGET)
 
 prepare: 
+	cd Color_console_output && make
 	
 
 $(BuildPrefix)%.o : $(SourcePrefix)%.cpp
 	@echo [CXX] -c $< -o $@
 	@$(CXX) $(CXXFLAGS) $(Include) -c $< -o $@
 
-#Useless compilation part for compilling in main
 $(TARGET) : $(objects) $(LibObjects) $(MainObject)
 	@echo [CC] $^ -o $@
 	@$(CXX) $(CXXFLAGS) $(Include) $^ -o $@
@@ -46,6 +46,7 @@ $(TARGET) : $(objects) $(LibObjects) $(MainObject)
 clean :
 	rm $(BuildFolder)/*.o
 	rm $(TARGET)
+	cd Color_console_output && make clean
 
 folder :
 	mkdir -p $(BuildFolder)

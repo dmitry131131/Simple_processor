@@ -5,8 +5,6 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-const int VERSION = 2;
-
 enum processorErrorCode {
     NO_PROCESSOR_ERRORS,
     WRONG_COMMAND,

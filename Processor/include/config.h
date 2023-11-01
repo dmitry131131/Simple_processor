@@ -5,6 +5,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+const int VERSION = 2;
+
 const size_t RAM_SIZE       = 100;
 const size_t VRAM_SIZE      = 2601;
 

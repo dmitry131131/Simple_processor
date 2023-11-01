@@ -5,6 +5,10 @@
 #ifndef DSL_H
 #define DSL_H
 
+const int COMMAND_PART = 0b11111;
+const int ADDON_PART   = 0b11100000;
+const unsigned int COMMAND_MASK = 0x000000FF;
+
 /// @brief Enum with command codes
 enum commandCodes {
     NO_COMMAND  = 0,

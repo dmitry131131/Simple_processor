@@ -7,17 +7,11 @@
 
 #define USE_GRAPHICS
 
-const int COMMAND_PART = 0b11111;
-const int ADDON_PART   = 0b11100000;
-const unsigned int COMMAND_MASK = 0x000000FF;
-
 #include "config.h"
+#include "DSL.h"
 
 const size_t MEMORY_SIZE    = RAM_SIZE + VRAM_SIZE;
 const size_t VRAM_ADRESS    = MEMORY_SIZE - VRAM_SIZE;
-
-
-#include "DSL.h"
 
 struct softProcessorUnit {
     Stack stack;
