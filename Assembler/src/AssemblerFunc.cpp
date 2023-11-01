@@ -17,10 +17,10 @@ static bool check_line_availability(const char* string);
 
 asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer, const char* filename)
 {
-    #define DEF_CMD(name, num, args, asm_code, proc_code)       \
-        else if (!strcmp(command, name))                        \
-        {                                                       \
-            asm_code                                            \
+    #define DEF_CMD(name, num, args, asm_code, proc_code, dis_code)     \
+        else if (!strcmp(command, name))                                \
+        {                                                               \
+            asm_code                                                    \
         } 
 
     #define DESTRUCT_ALL_BUFFERS_AND_RETURN do{     \

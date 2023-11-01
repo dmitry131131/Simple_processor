@@ -15,9 +15,9 @@
 
 enum processorErrorCode processing(softProcessorUnit* processor)
 {
-    #define DEF_CMD(name, num, arg, asm_code, proc_code)    \
-        case num:                                           \
-            proc_code                                       \
+    #define DEF_CMD(name, num, arg, asm_code, proc_code, dis_code)      \
+        case num:                                                       \
+            proc_code                                                   \
             break;                                          
 
     commandCodes command = NO_COMMAND;

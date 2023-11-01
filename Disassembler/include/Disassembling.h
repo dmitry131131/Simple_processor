@@ -8,9 +8,12 @@
 struct disassemblerCase {
     size_t IP;
     char* CS;
+    size_t CS_len;
     size_t commandCount;
 };
 
 #include "DSL.h"
+
+disassemblerErrorCode disassembling(disassemblerCase* disasmCase);
 
 #endif

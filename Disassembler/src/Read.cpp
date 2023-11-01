@@ -5,8 +5,8 @@
 #include <assert.h>
 
 #include "Config.h"
-#include "Disassembling.h"
 #include "DisasmErrors.h"
+#include "Disassembling.h"
 #include "DisasmRead.h"
 #include "DisassemblerUtils.h"
 
@@ -57,6 +57,7 @@ disassemblerErrorCode read_bin_file(const char* filename, disassemblerCase* disa
     size_t fileSize = fileInfo.st_size;
 
     disasmCase->CS = (char*) calloc(fileSize, sizeof(char));
+    disasmCase->CS_len = fileSize - FILE_HEADER_LEN;
 
     if (!(disasmCase->CS))
     {

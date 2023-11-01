@@ -87,6 +87,19 @@
         return COPU_ARG_ERROR;                                                                                          \
     }
 
+#define JUMP_DISASSEMBLER(name) do{                                                                                     \
+    disasmCase->IP++;                                                                                                   \
+                                                                                                                        \
+    int newIp = -1;                                                                                                     \
+    if (copy_data_from_buffer(disasmCase->CS + disasmCase->IP, &newIp, sizeof(int)))                                    \
+    {                                                                                                                   \
+        return COPU_ARG_ERROR;                                                                                          \
+    }                                                                                                                   \
+    disasmCase->IP += sizeof(int);                                                                                      \
+                                                                                                                        \
+    textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), name " %d\n", newIp);  \
+}while(0)                          
+
 /*---------------------------------------->>     ~~PUSH/POP MACROSES~~      <<-----------------------------------------*/
 
 #define CHECK_REGISTER_NAME(reg)                                                                                        \
@@ -189,19 +202,57 @@
             break;                                                                                                      \
         }                                                                                                               \
     }                                                                                                                   \
-                                                                                                                        \
 }
+
+#define WRITE_REGISTER_NAME(reg) do{                                                                                    \
+char reg_name[8] = {};                                                                                                  \
+switch (reg)                                                                                                            \
+{                                                                                                                       \
+case NO_REG:                                                                                                            \
+    break;                                                                                                              \
+                                                                                                                        \
+case RAX:                                                                                                               \
+    strcpy(reg_name, "rax");                                                                                            \
+    break;                                                                                                              \
+                                                                                                                        \
+case RBX:                                                                                                               \
+    strcpy(reg_name, "rbx");                                                                                            \
+    break;                                                                                                              \
+                                                                                                                        \
+case RCX:                                                                                                               \
+    strcpy(reg_name, "rcx");                                                                                            \
+    break;                                                                                                              \
+                                                                                                                        \
+case RDX:                                                                                                               \
+    strcpy(reg_name, "rdx");                                                                                            \
+    break;                                                                                                              \
+                                                                                                                        \
+default:                                                                                                                \
+    break;                                                                                                              \
+}                                                                                                                       \
+textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "%s", reg_name);           \
+}while(0)  
+
+/*----------------------------------->>     ~~SINGLE DISASSEMBLER MACROS~~      <<-------------------------------------*/
+
+#define SINGLE_COMMAND_DISASM(name) do{                                                                                 \
+    textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), name "\n");            \
+    disasmCase->IP++;                                                                                                   \
+}while(0)
 
 /*---------------------------------------->>     ~~DEF_CMD MACROSES~~      <<------------------------------------------*/
 
 DEF_CMD("jmp", JMP, 1, 
-    JUMP_ASSEMBLER("jmp", JMP), 
-    {
-        JUMP_PROCESSOR
+JUMP_ASSEMBLER("jmp", JMP), 
+{
+    JUMP_PROCESSOR
 
-        err = processor_jmp(processor, newIp);
-    }
-    )
+    err = processor_jmp(processor, newIp);
+},
+{
+    JUMP_DISASSEMBLER("jmp");
+}
+)
 
 DEF_CMD("ja", JA, 1,
 JUMP_ASSEMBLER("ja", JA),
@@ -209,6 +260,9 @@ JUMP_ASSEMBLER("ja", JA),
     JUMP_PROCESSOR
 
     err = processor_ja(processor, newIp);
+},
+{
+    JUMP_DISASSEMBLER("ja");
 })
 
 DEF_CMD("jae", JAE, 1,
@@ -217,6 +271,9 @@ JUMP_ASSEMBLER("jae", JAE),
     JUMP_PROCESSOR
 
     err = processor_jae(processor, newIp);
+},
+{
+    JUMP_DISASSEMBLER("jae");
 })
 
 DEF_CMD("jb", JB, 1,
@@ -225,6 +282,9 @@ JUMP_ASSEMBLER("jb", JB),
     JUMP_PROCESSOR
 
     err = processor_jb(processor, newIp);
+},
+{
+    JUMP_DISASSEMBLER("jb");
 })
 
 DEF_CMD("jbe", JBE, 1,
@@ -233,6 +293,9 @@ JUMP_ASSEMBLER("jbe", JBE),
     JUMP_PROCESSOR
 
     err = processor_jbe(processor, newIp);
+},
+{
+    JUMP_DISASSEMBLER("jbe");
 })
 
 DEF_CMD("je", JE, 1,
@@ -241,6 +304,9 @@ JUMP_ASSEMBLER("je", JE),
     JUMP_PROCESSOR
 
     err = processor_je(processor, newIp);
+},
+{
+    JUMP_DISASSEMBLER("je");
 })
 
 DEF_CMD("jne", JNE, 1,
@@ -249,6 +315,9 @@ JUMP_ASSEMBLER("jne", JNE),
     JUMP_PROCESSOR
 
     err = processor_jne(processor, newIp);
+},
+{
+    JUMP_DISASSEMBLER("jne");
 })
 
 DEF_CMD("call", CALL, 1,
@@ -257,8 +326,10 @@ JUMP_ASSEMBLER("call", CALL),
     JUMP_PROCESSOR
 
     err = processor_call(processor, newIp);
-}
-)
+},
+{
+    JUMP_DISASSEMBLER("call");
+})
 
 DEF_CMD("push", PUSH, 1,
     {                                                                       
@@ -356,8 +427,70 @@ DEF_CMD("push", PUSH, 1,
 
             processor->IP += sizeof(int);
         }
-    }
-    )
+    },
+    {
+        disasmCase->IP++;
+        if ((int) command == (PUSH | IMM))
+        {
+            if (copy_data_from_buffer(disasmCase->CS + disasmCase->IP, &commandArg, sizeof(double)))
+            {
+                return COPU_ARG_ERROR;
+            }
+            
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "push %lf\n", commandArg);
+
+            disasmCase->IP += sizeof(double);
+        }
+        else if ((int) command == (PUSH | REG))
+        {
+            reg = (registerNames) *(disasmCase->CS + disasmCase->IP);
+
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "push ");
+            WRITE_REGISTER_NAME(reg);
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "\n");
+
+            disasmCase->IP++;
+        }
+        else if (((unsigned int) command & COMMAND_MASK) == (PUSH | RAM | IMM))
+        {
+            int adress = -1;
+            if (copy_data_from_buffer(disasmCase->CS + disasmCase->IP, &adress, sizeof(int)))
+            {
+                return COPU_ARG_ERROR;
+            }
+
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "push [%d]\n", adress);
+
+            disasmCase->IP += sizeof(int);
+        }
+        else if(((unsigned int) command & COMMAND_MASK) == (PUSH | RAM | REG))
+        {
+            reg = (registerNames) *(disasmCase->CS + disasmCase->IP);
+            
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "push [");
+            WRITE_REGISTER_NAME(reg);
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "]\n");
+
+            disasmCase->IP += sizeof(char);
+        }
+        else if (((unsigned int) command & COMMAND_MASK) == (PUSH | RAM | REG | IMM))
+        {
+            int adress = -1;
+            reg = (registerNames) *(disasmCase->CS + disasmCase->IP);
+            disasmCase->IP++;
+
+            if (copy_data_from_buffer(disasmCase->CS + disasmCase->IP, &adress, sizeof(int)))
+            {
+                return COPU_ARG_ERROR;
+            }
+
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "push [");
+            WRITE_REGISTER_NAME(reg);
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "+%d]\n", adress);
+
+            disasmCase->IP += sizeof(int);
+        }
+    })
 
 DEF_CMD("pop", POP, 1, 
     {
@@ -425,112 +558,217 @@ DEF_CMD("pop", POP, 1,
 
             processor->IP += sizeof(int);
         }
-    }
-    )
+    },
+    {
+    disasmCase->IP++;
+
+        if ((int) command == (POP | REG))
+        {
+            reg = (registerNames) *(disasmCase->CS + disasmCase->IP);
+
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "pop ");
+            WRITE_REGISTER_NAME(reg);
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "\n");
+
+            disasmCase->IP++;
+        }
+        else if(((unsigned int) command & COMMAND_MASK) == (POP | RAM | IMM))
+        {
+            int adress = -1;
+
+            if (copy_data_from_buffer(disasmCase->CS + disasmCase->IP, &adress, sizeof(int)))
+            {
+                return COPU_ARG_ERROR;
+            }
+
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "pop [%d]\n", adress);
+
+            disasmCase->IP += sizeof(int);
+        }
+        else if(((unsigned int) command & COMMAND_MASK) == (POP | RAM | REG))
+        {
+            reg = (registerNames) *(disasmCase->CS + disasmCase->IP);
+            
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "pop [");
+            WRITE_REGISTER_NAME(reg);
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "]\n");
+
+            disasmCase->IP += sizeof(char);
+        }
+        else if(((unsigned int) command & COMMAND_MASK) == (POP | IMM | REG | RAM))
+        {
+            int adress = -1;
+            reg = (registerNames) *(disasmCase->CS + disasmCase->IP);
+            disasmCase->IP++;
+
+            if (copy_data_from_buffer(disasmCase->CS + disasmCase->IP, &adress, sizeof(int)))
+            {
+                return COPU_ARG_ERROR;
+            }
+
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "pop [");
+            WRITE_REGISTER_NAME(reg);
+            textBuffer.bufferPointer += (size_t) sprintf((textBuffer.Buffer + textBuffer.bufferPointer), "+%d]\n", adress);
+
+            disasmCase->IP += sizeof(int);
+        }
+    })
 
 DEF_CMD("add", ADD, 0, 
     {
         WRITE_SINGLE_COMMAND("add", ADD);
     },
+    {
     err = processor_add(&(processor->stack));
     processor->IP++;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("add");
+    })
 
 DEF_CMD("sub", SUB, 0, 
     {
         WRITE_SINGLE_COMMAND("sub", SUB);
     },
+    {
     err = processor_sub(&(processor->stack));
     processor->IP++;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("sub");
+    })
 
 DEF_CMD("mul", MUL, 0, 
     {
         WRITE_SINGLE_COMMAND("mul", MUL);
     },
+    {
     err = processor_mul(&(processor->stack));
     processor->IP++;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("mul");
+    })
 
 DEF_CMD("div", DIV, 0, 
     {
         WRITE_SINGLE_COMMAND("div", DIV);
     },
+    {
     err = processor_div(&(processor->stack));
     processor->IP++;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("div");
+    })
 
 DEF_CMD("out", OUT, 0, 
     {
         WRITE_SINGLE_COMMAND("out", OUT);
     },
+    {
     err = processor_out(&(processor->stack), stdout);
     processor->IP++;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("out");
+    })
 
 DEF_CMD("sqrt", SQRT, 0, 
     {
         WRITE_SINGLE_COMMAND("sqrt", SQRT);
     },
+    {
     err = processor_sqrt(&(processor->stack));
     processor->IP++;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("sqrt");
+    })
 
 DEF_CMD("sin", SIN, 0, 
     {
         WRITE_SINGLE_COMMAND("sin", SIN);
     },
+    {
     err = processor_trig(&(processor->stack), command);
     processor->IP++;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("sin");
+    })
 
 DEF_CMD("cos", COS, 0, 
     {
         WRITE_SINGLE_COMMAND("cos", COS);
     },
+    {
     err = processor_trig(&(processor->stack), command);
     processor->IP++;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("cos");
+    })
 
 DEF_CMD("tan", TAN, 0, 
     {
         WRITE_SINGLE_COMMAND("tan", TAN);
     },
+    {
     err = processor_trig(&(processor->stack), command);
     processor->IP++;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("tan");
+    })
 
 DEF_CMD("in", IN, 0, 
     {
         WRITE_SINGLE_COMMAND("in", IN);
     },
+    {
     err = processor_in(&(processor->stack));
     processor->IP++;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("in");
+    })
 
 DEF_CMD("ret", RET, 0,
     {
         WRITE_SINGLE_COMMAND("ret", RET);
     },
+    {
     err = processor_ret(processor);
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("ret");
+    })
 
 DEF_CMD("hlt", HLT, 0, 
     {
         WRITE_SINGLE_COMMAND("hlt", HLT);
     },
+    {
     err = processor_hlt(&(processor->stack));
     processor->IP++;
     return NO_PROCESSOR_ERRORS;
-    )
+    },
+    {
+        SINGLE_COMMAND_DISASM("hlt");
+    })
 
 DEF_CMD("draw", DRAW, 0,
     {
         WRITE_SINGLE_COMMAND("draw", DRAW);
     },
+    {
     err = processor_console_draw(processor);
     processor->IP++;
-)
+    },
+    {
+        SINGLE_COMMAND_DISASM("draw");
+    })
 
 #undef WRITE_DOUBLE_COMMAND_TO_LISTING
 #undef WRITE_SINGLE_COMMAND_TO_LISTING
@@ -540,5 +778,8 @@ DEF_CMD("draw", DRAW, 0,
 #undef JUMP_ASSEMBLER
 #undef JUMP_PROCESSOR
 #undef WRITE_SINGLE_COMMAND
+#undef WRITE_REGISTER_NAME
+#undef JUMP_DISASSEMBLER
+#undef SINGLE_COMMAND_DISASM
 
 #endif

@@ -34,7 +34,12 @@ int main(int argc, char* argv[])
         RETURN(0);
     }
 
-
+    if ((error = disassembling(&disasmCase)))
+    {
+        print_disassembler_error(stderr, error, disasmCase.IP);
+        
+        RETURN(0);
+    }
 
     RETURN(0);
     #undef RETURN

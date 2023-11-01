@@ -17,7 +17,7 @@ BuildPrefix = build/
 BuildFolder = build
 Include = -Iinclude -IColor_console_output/include -I../include
 
-Sources = Read.cpp Error.cpp Disassembling.cpp DisassemblerUtils.cpp
+Sources = Read.cpp Error.cpp Disassembling.cpp DisassemblerUtils.cpp DisasmOut.cpp
 Main = main.cpp
 
 LibObjects = Color_console_output/build/Color_output.o

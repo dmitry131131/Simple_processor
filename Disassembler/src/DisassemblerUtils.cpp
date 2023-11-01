@@ -18,9 +18,10 @@ disassemblerErrorCode disassembler_ctor(disassemblerCase* disasmCase)
 {
     assert(disasmCase);
 
-    disasmCase->IP                   = 0;
-    disasmCase->commandCount         = 0;
-    disasmCase->CS                   = NULL;
+    disasmCase->IP              = 0;
+    disasmCase->commandCount    = 0;
+    disasmCase->CS              = NULL;
+    disasmCase->CS_len          = 0;
 
     if (disassembler_verify(disasmCase))
     {
@@ -34,8 +35,9 @@ disassemblerErrorCode disassembler_dtor(disassemblerCase* disasmCase)
 {
     assert(disasmCase);
 
-    disasmCase->IP = 0;
-    disasmCase->commandCount = 0;
+    disasmCase->IP              = 0;
+    disasmCase->commandCount    = 0;
+    disasmCase->CS_len          = 0;
 
     free(disasmCase->CS);
 
