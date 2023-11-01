@@ -49,7 +49,6 @@ clean :
 	rm $(BuildFolder)/*.o
 	rm $(TARGET)
 	cd Stack_task && make clean
-	cd Onegin_task && make clean
 
 folder :
 	mkdir -p $(BuildFolder)

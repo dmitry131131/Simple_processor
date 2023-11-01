@@ -34,7 +34,6 @@ all : prepare folder $(TARGET)
 
 prepare: 
 	cd Onegin_task && make
-	cd Onegin_task/Color_console_output && make
 
 $(BuildPrefix)%.o : $(SourcePrefix)%.cpp
 	@echo [CXX] -c $< -o $@
@@ -48,7 +47,6 @@ clean :
 	rm $(BuildFolder)/*.o
 	rm $(TARGET)
 	cd Onegin_task && make clean
-	cd Onegin_task/Color_console_output && make clean
 
 folder :
 	mkdir -p $(BuildFolder)
