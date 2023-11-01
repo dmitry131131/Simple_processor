@@ -20,7 +20,7 @@ Include = -Iinclude -IStack_task/include
 Sources = 
 Main = main.cpp
 
-LibObjects = Stack_task/Color_console_output/build/Color_output.o Stack_task/build/Hash.o Stack_task/build/Output.o Stack_task/build/Stack.o
+LibObjects = 
 
 Source = $(addprefix $(SourcePrefix), $(Sources))
 MainObject = $(patsubst %.cpp, $(BuildPrefix)%.o, $(Main))
@@ -32,8 +32,7 @@ objects = $(patsubst $(SourcePrefix)%.cpp, $(BuildPrefix)%.o, $(Source))
 all : prepare folder $(TARGET)
 
 prepare: 
-	cd Stack_task && make
-	cd Stack_task/Color_console_output && make
+	
 
 $(BuildPrefix)%.o : $(SourcePrefix)%.cpp
 	@echo [CXX] -c $< -o $@

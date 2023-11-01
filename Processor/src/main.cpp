@@ -13,11 +13,7 @@
 struct processorThreadStruct{    
     processorErrorCode error;
     softProcessorUnit processor;
-};
-
-struct GPUThreadStruct{
-    softProcessorUnit* processorPtr;
-    sf::RenderWindow*  windowPtr;
+    bool GPU_call;
 };
 
 void* processor_thread_function(void* threadData);
@@ -33,7 +29,7 @@ int main(int argc, char* argv[])
         return error;                                                       \
     }while(0)
 
-    processorThreadStruct processorThreadStructData = {NO_PROCESSOR_ERRORS, {}};
+    processorThreadStruct processorThreadStructData = {NO_PROCESSOR_ERRORS, {}, 0};
 
     char* filename = NULL;
 
@@ -60,6 +56,8 @@ int main(int argc, char* argv[])
     #endif
 
     pthread_join(processorThread, NULL);
+
+    processorThreadStructData.GPU_call = 1;   // close GPU thread
     
     #ifdef USE_GRAPHICS
     pthread_join(GPUThread, NULL);
@@ -98,8 +96,9 @@ void* GPU_thread_function(void* threadData)
 
     while (window.isOpen())
     {
-        if (threadStructData->error)
+        if (threadStructData->error || threadStructData->GPU_call)
         {
+            threadStructData->GPU_call = 0;
             window.close();
             return NULL;
         }

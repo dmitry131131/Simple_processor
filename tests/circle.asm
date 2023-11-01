@@ -39,6 +39,7 @@ pop [4]    ; radius
 ; draw terrain and stop programm
 :stop
     draw
+    in
     hlt
 
 ; check x and y values for drawing
