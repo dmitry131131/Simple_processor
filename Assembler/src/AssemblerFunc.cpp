@@ -47,7 +47,7 @@ asmErrorCode main_assembler_function(textData* text, TagBuffer* tagBuffer, const
         return error;
     }
 
-    if ((error = buffer_ctor(&textBuffer, text->bufferSize * 10)))
+    if ((error = buffer_ctor(&textBuffer, text->bufferSize * 50)))
     {
         assert(!error);
         return error;
