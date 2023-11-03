@@ -11,7 +11,7 @@ pop [2]
 
 push 2601
 pop rcx
-push 25
+push 15
 pop [4]    ; radius
 
 ; main function
@@ -69,7 +69,13 @@ pop [4]    ; radius
 :if_one
     push [10]
     push [11]
-    je one
+    sub
+    push [10]
+    push [11]
+    sub
+    mul
+    push 200
+    jb one
 
     push 0
     pop [3]
