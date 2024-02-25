@@ -5,7 +5,7 @@
 #ifndef PROCESSING_H
 #define PROCESSING_H
 
-#define USE_GRAPHICS
+// #define USE_GRAPHICS
 
 #include "config.h"
 #include "DSL.h"
@@ -17,7 +17,7 @@ struct softProcessorUnit {
     Stack stack;
     Stack retStack;
     int* RAM;
-    int rax, rbx, rcx, rdx;
+    int rax, rbx, rcx, rdx, rpx;
     size_t IP;
     char* CS;
     size_t commandCount;

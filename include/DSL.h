@@ -48,7 +48,8 @@ enum registerNames {
     RAX     = 1,
     RBX     = 2,
     RCX     = 3,
-    RDX     = 4
+    RDX     = 4,
+    RPX     = 5
 };
 
 #endif

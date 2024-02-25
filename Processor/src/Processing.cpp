@@ -156,6 +156,10 @@ processorErrorCode processor_pop_to_register(softProcessorUnit* processor, regis
         processor->rdx = data;
     break;
 
+    case RPX:
+        processor->rpx = data;
+    break;
+
     case NO_REG:
         return WRONG_COMMAND;
         break;
@@ -222,6 +226,10 @@ processorErrorCode processor_push_from_register(softProcessorUnit* processor, re
     
     case RDX:
         data = processor->rdx;
+    break;
+
+    case RPX:
+        data = processor->rpx;
     break;
 
     case NO_REG:

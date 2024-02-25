@@ -314,6 +314,10 @@ processorErrorCode calculate_RAM_adress(softProcessorUnit* processor, registerNa
         *adress += processor->rdx;
     break;
 
+    case RPX:
+        *adress += processor->rpx;
+    break;
+
     case NO_REG:
         return WRONG_COMMAND;
         break;

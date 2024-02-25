@@ -122,6 +122,9 @@
         case 'd':                                                                                                       \
             reg = RDX;                                                                                                  \
             break;                                                                                                      \
+        case 'p':                                                                                                       \
+            reg = RPX;                                                                                                  \
+            break;                                                                                                      \
                                                                                                                         \
         default:                                                                                                        \
             error = WRONG_REGISTER_NAME;                                                                                \
@@ -224,6 +227,9 @@
             break;                                                                                                      \
         case RDX:                                                                                                       \
             strcpy(reg_name, "rdx");                                                                                    \
+            break;                                                                                                      \
+        case RPX:                                                                                                       \
+            strcpy(reg_name, "rpx");                                                                                    \
             break;                                                                                                      \
                                                                                                                         \
         default:                                                                                                        \
