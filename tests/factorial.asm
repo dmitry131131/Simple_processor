@@ -2,9 +2,11 @@
 in
 pop rax
 push 1
+push 0
 pop rbx
+pop [rbx+1]
 call factorial
-push rbx
+push [rbx+1]
 out
 hlt
 
@@ -22,10 +24,10 @@ hlt
     je return
 
     ; rbx *= rax
-    push rbx
+    push [rbx+1]
     push rax
     mul
-    pop rbx
+    pop [rbx+1]
 
     call factorial
 

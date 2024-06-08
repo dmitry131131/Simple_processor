@@ -31,7 +31,13 @@ objects = $(patsubst $(SourcePrefix)%.cpp, $(BuildPrefix)%.o, $(Source))
 
 .PHONY : all clean folder release debug
 
-all : prepare folder $(TARGET)
+all : release
+
+release : CXXFLAGS = -march=native -O3 -DNDEBUG
+release : prepare folder $(TARGET)
+	@echo [RELEASE_MODE]
+
+debug : prepare folder $(TARGET)
 
 prepare: 
 	cd Stack_task && make

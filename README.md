@@ -1,4 +1,4 @@
-# Simple_processor(SPU)
+# Virtual CPU(SPU)
 
 ### Описание
 
